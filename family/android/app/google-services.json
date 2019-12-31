@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "661058407569",
+    "firebase_url": "https://family-1990e.firebaseio.com",
+    "project_id": "family-1990e",
+    "storage_bucket": "family-1990e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661058407569:android:68f92af8e4379583498330",
+        "android_client_info": {
+          "package_name": "family.me.kawka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "661058407569-84fck88qrimq775hjsoj130coe9ejgmc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "family.me.kawka",
+            "certificate_hash": "c83ca2c8b5e966c2b19c7f1620f9811f537d01fa"
+          }
+        },
+        {
+          "client_id": "661058407569-fm3mpom48e9r1fpku0eh14hfkcgqu5vu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO8gor_lQiPvajde5RKdqTSg1DU_C1IlE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "661058407569-fm3mpom48e9r1fpku0eh14hfkcgqu5vu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
