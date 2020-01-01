@@ -1,6 +1,8 @@
 class TextSizes {
   static const double loginWelcoming = 24.0;
-  static const double fullscreenPlaceholder = 24.0;
+
+  static const double placeholderTitle = 24.0;
+  static const double placeholderSubtitle = 16.0;
 
   static const double menuContent = 36.0;
   static const double menuCardTitle = 24.0;

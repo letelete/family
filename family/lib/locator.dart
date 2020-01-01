@@ -1,5 +1,6 @@
 import 'package:family/core/services/authentication_service.dart';
 import 'package:family/core/viewmodels/login_model.dart';
+import 'package:family/core/viewmodels/no_route_model.dart';
 import 'package:get_it/get_it.dart';
 
 import 'core/services/api.dart';
@@ -11,4 +12,5 @@ void setupLocator() {
   locator.registerLazySingleton(() => Api());
 
   locator.registerFactory(() => LoginModel());
+  locator.registerFactory(() => NoRouteModel());
 }

@@ -16,55 +16,54 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BaseView<LoginModel>(
-      builder: (context, model, child) =>
-     Scaffold(
-          body: InkWell(
-            onTap: () async {
-              bool success = await model.login();
-              if (success) {
-                Navigator.pushNamed(context, Paths.homeView);
-              }
-            },
-            child: Container(
-              decoration: BoxDecoration(gradient: Gradients.backgroundSolid),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Expanded(
-                    child: SvgPicture.asset(
-                      Assets.loginPageIllustration,
-                      semanticsLabel: 'Login page illustration',
-                      width: 250.0,
-                      height: 250.0,
+      builder: (context, model, child) => Scaffold(
+        body: InkWell(
+          onTap: () async {
+            bool success = await model.login();
+            if (success) {
+              Navigator.pushNamed(context, Paths.homeView);
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(gradient: Gradients.backgroundSolid),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Expanded(
+                  child: SvgPicture.asset(
+                    Assets.loginPageIllustration,
+                    semanticsLabel: 'Login page illustration',
+                    width: 250.0,
+                    height: 250.0,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 32.0),
+                  width: MediaQuery.of(context).size.width,
+                  child: Text(
+                    'Connect with google to continue',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Roboto',
+                      color: Colors.white,
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 32.0),
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      'Connect with google to continue',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Roboto',
-                        color: Colors.white,
-                      ),
-                    ),
+                ),
+                Visibility(
+                  visible: model.viewState == ViewState.Busy,
+                  child: LinearProgressIndicator(
+                    backgroundColor: Colors.black,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
                   ),
-                  Visibility(
-                    visible: model.viewState == ViewState.Busy,
-                    child: LinearProgressIndicator(
-                      backgroundColor: Colors.black,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }
