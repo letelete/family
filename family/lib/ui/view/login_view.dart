@@ -2,6 +2,7 @@ import 'package:family/base/base_view.dart';
 import 'package:family/core/state/view_state.dart';
 import 'package:family/core/viewmodels/login_model.dart';
 import 'package:family/router.dart';
+import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/gradients.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -25,14 +26,14 @@ class _LoginViewState extends State<LoginView> {
               }
             },
             child: Container(
-              decoration: BoxDecoration(gradient: AppGradientBackground.solid),
+              decoration: BoxDecoration(gradient: Gradients.backgroundSolid),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Expanded(
                     child: SvgPicture.asset(
-                      'assets/illustration_login_page.svg',
+                      Assets.loginPageIllustration,
                       semanticsLabel: 'Login page illustration',
                       width: 250.0,
                       height: 250.0,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AppGradientBackground {
-  static const LinearGradient solid = LinearGradient(
+class Gradients {
+  static const LinearGradient backgroundSolid = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
     stops: const [0.5, 1],
@@ -11,7 +11,7 @@ class AppGradientBackground {
     ],
   );
 
-  static const LinearGradient transparent = LinearGradient(
+  static const LinearGradient backgroundTransparent = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
     stops: const [0.5, 1],
@@ -20,14 +20,14 @@ class AppGradientBackground {
       const Color.fromRGBO(68, 0, 0, 0.84),
     ],
   );
-}
 
-const LinearGradient familyPhotoCoverGradient = LinearGradient(
+  static const LinearGradient familyPhotoCover = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
     stops: const [0.5, 1],
     colors: const [
       const Color.fromRGBO(0, 0, 0, 1),
-      const Color.fromRGBO(0,0,0,0),
+      const Color.fromRGBO(0, 0, 0, 0),
     ],
   );
+}
