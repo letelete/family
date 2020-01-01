@@ -1,18 +1,29 @@
+import 'package:family/base/base_view.dart';
+import 'package:family/core/state/view_state.dart';
+import 'package:family/core/viewmodels/login_model.dart';
+import 'package:family/router.dart';
 import 'package:family/ui/shared/gradients.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 
-class LoginView extends StatelessWidget {
+class LoginView extends StatefulWidget {
+  @override
+  _LoginViewState createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProgressBar(),
-      child: Consumer<ProgressBar>(
-        builder: (_, progressBar, __) => Scaffold(
+    return BaseView<LoginModel>(
+      builder: (context, model, child) =>
+     Scaffold(
           body: InkWell(
-            onLongPress: () => progressBar.hide(),
-            onTap: () => progressBar.show(),
+            onTap: () async {
+              bool success = await model.login();
+              if (success) {
+                Navigator.pushNamed(context, Paths.homeView);
+              }
+            },
             child: Container(
               decoration: BoxDecoration(gradient: AppGradientBackground.solid),
               child: Column(
@@ -42,7 +53,7 @@ class LoginView extends StatelessWidget {
                     ),
                   ),
                   Visibility(
-                    visible: progressBar.isVisible,
+                    visible: model.viewState == ViewState.Busy,
                     child: LinearProgressIndicator(
                       backgroundColor: Colors.black,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
@@ -53,7 +64,6 @@ class LoginView extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }
