@@ -67,23 +67,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-class ProgressBar with ChangeNotifier {
-  bool _isVisible = false;
-
-  bool get isVisible => _isVisible;
-
-  void show() {
-    if (!_isVisible) {
-      _isVisible = true;
-      notifyListeners();
-    }
-  }
-
-  void hide() {
-    if (_isVisible) {
-      _isVisible = false;
-      notifyListeners();
-    }
-  }
-}
