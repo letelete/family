@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-class Colors {
+class AppColors {
   static const Color primaryAccent = const Color.fromRGBO(229, 9, 20, 1);
 
   static const Color background = const Color.fromRGBO(0, 0, 0, 1);
