@@ -7,7 +7,10 @@ class Time {
   /// Returns [DateTime] object of today's day date and function execution time.
   DateTime getTodaysDateTime() => DateTime.now();
 
-  /// Returns [String] data according to given DateTime object in a
+  /// Returns [Duration] object of difference between [a] and [b] date.
+  Duration getDifferenceBetweenDates(DateTime a, DateTime b) => a.difference(b);
+
+  /// Returns [String] data according to given [DateTime] object in a
   /// human-friendly format.
   ///
   /// Template: NameOfWeek, NameOfMonth DayOfMonth
@@ -45,5 +48,29 @@ class Time {
     const String defaultOrdinal = 'th';
     const Map<int, String> ordinalNumbers = {1: 'st', 2: 'nd', 3: 'rd'};
     return '$day${ordinalNumbers[day] ?? defaultOrdinal}';
+  }
+
+  /// Returns [String] data according to given [Duration] object in a
+  /// human-friendly format.
+  ///
+  /// Template: Days of duration
+  /// Examples:
+  ///   - 5 days 11 hours 23 seconds -> 5 days
+  ///   - 1 day -> tomorrow
+  ///   - 0 days -> today
+  String getHumanDurationInDays(Duration duration) {
+    const Map<int, String> humanDuration = {
+      -1: 'Yesterday',
+      0: 'Today',
+      1: 'Tomorrow',
+    };
+    int days = duration.inDays;
+
+    if (humanDuration.containsKey(days)) {
+      return humanDuration[days];
+    }
+
+    final String wordAddition = 'days {$duration.isNegative ? "ago" : ""}';
+    return '$days $wordAddition';
   }
 }
