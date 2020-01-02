@@ -24,7 +24,6 @@ class Gradients {
   static const LinearGradient familyPhotoCover = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
-    stops: const [0.5, 1],
     colors: const [
       const Color.fromRGBO(0, 0, 0, 1),
       const Color.fromRGBO(0, 0, 0, 0),

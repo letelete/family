@@ -16,4 +16,7 @@ class TextSizes {
   static const double familyPriceLarge = 24.0;
   static const double familyPriceSmall = 14.0;
   static const double familyPaymentInfo = 12.0;
+
+  static const double appBarTitle = 24.0;
+  static const double appBarSubtitle = 16.0;
 }
