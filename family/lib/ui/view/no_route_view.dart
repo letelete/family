@@ -20,7 +20,7 @@ class NoRouteView extends StatelessWidget {
       },
       builder: (context, model, child) => Scaffold(
         body: Container(
-          decoration: BoxDecoration(gradient: Gradients.backgroundSolid),
+          decoration: BoxDecoration(gradient: AppGradients.backgroundSolid),
           child: Column(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Gradients {
+class AppGradients {
   static const LinearGradient backgroundSolid = LinearGradient(
     begin: Alignment.bottomCenter,
     end: Alignment.topCenter,
@@ -16,8 +16,8 @@ class Gradients {
     end: Alignment.topCenter,
     stops: const [0.5, 1],
     colors: const [
-      const Color.fromRGBO(0, 0, 0, 0.94),
-      const Color.fromRGBO(68, 0, 0, 0.84),
+      const Color.fromRGBO(0, 0, 0, 0.95),
+      const Color.fromRGBO(68, 0, 0, 0.4),
     ],
   );
 

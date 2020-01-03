@@ -64,7 +64,7 @@ class FamilyCardWidget extends StatelessWidget {
   Widget _getImageGradient({@required double parentWidth}) => Container(
         width: parentWidth,
         height: _cardHeight,
-        decoration: BoxDecoration(gradient: Gradients.familyPhotoCover),
+        decoration: BoxDecoration(gradient: AppGradients.familyPhotoCover),
       );
 
   Widget _getForeground() => Positioned(
