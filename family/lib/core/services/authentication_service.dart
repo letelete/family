@@ -21,13 +21,7 @@ class AuthenticationService {
   }
 
   Future<bool> logout() async {
-    final User loggedOutUser = await _api.getLoggedOutUser();
-
-    bool success = loggedOutUser == null;
-    if (success) {
-      userController.close();
-    }
-
+    bool success = await _api.logOutUser();
     return success;
   }
 }

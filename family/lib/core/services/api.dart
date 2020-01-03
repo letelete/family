@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:family/core/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,21 +29,27 @@ class Api {
     );
 
     firebaseUser = (await _firebaseAuth.signInWithCredential(credential)).user;
+    if (firebaseUser != null) {
+      return User.fromFirebaseUser(firebaseUser);
+    }
 
-    return User.fromFirebaseUser(firebaseUser);
+    return null;
   }
 
-  /// Asynchronously logs out currently authenticated user and returns its [User] model.
+  /// Asynchronously logs out currently authenticated user..
   ///
-  /// If null, user has been successfully signed out,
-  /// else the returned [User] model is a currently signed user data.
-  Future<User> getLoggedOutUser() async {
+  /// Returns boolean with true whether everything went successful and false in opossite way.
+  Future<bool> logOutUser() async {
     FirebaseUser firebaseUser = await _firebaseAuth.currentUser();
     if (firebaseUser != null) {
-      await _firebaseAuth.signOut();
-      await _googleSignIn.signOut();
-      firebaseUser = null;
+      List<Future> logOutAsyncs = List.of([
+        _firebaseAuth.signOut(),
+        _googleSignIn.signOut(),
+      ]);
+      await Future.wait(logOutAsyncs);
     }
-    return User.fromFirebaseUser(firebaseUser);
+    bool success =
+        await _firebaseAuth.currentUser().then((user) => user == null);
+    return success;
   }
 }
