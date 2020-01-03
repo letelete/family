@@ -3,9 +3,6 @@ import 'package:family/ui/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Signature for when a tap has occurred.
-typedef GestureOnTap = void Function();
-
 /// Circle user avatar filled with given photo url.\
 ///
 /// If photo is null, or some error occured, avatar display
@@ -16,7 +13,7 @@ class UserAvatarWidget extends StatelessWidget {
   final String photoUrl;
   final double size;
   final String name;
-  final GestureOnTap onTap;
+  final GestureTapCallback onTap;
 
   const UserAvatarWidget({
     Key key,
