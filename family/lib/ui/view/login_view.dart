@@ -21,11 +21,16 @@ class _LoginViewState extends State<LoginView> {
           onTap: () async {
             bool success = await model.login();
             if (success) {
-              Navigator.pushNamed(context, Paths.homeView);
+              return Navigator.pushNamedAndRemoveUntil(
+                context,
+                Paths.homeView,
+                (Route<dynamic> route) => false,
+              );
             }
+            return null; // TODO: Handle error
           },
           child: Container(
-            decoration: BoxDecoration(gradient: Gradients.backgroundSolid),
+            decoration: BoxDecoration(gradient: AppGradients.backgroundSolid),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
