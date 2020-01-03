@@ -1,13 +1,14 @@
 import 'package:family/base/base_model.dart';
-import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
-import 'package:family/core/models/member.dart';
+import 'package:family/core/services/authentication_service.dart';
 import 'package:family/core/services/time.dart';
 import 'package:family/core/state/view_state.dart';
 import 'package:family/locator.dart';
 
 class HomeModel extends BaseModel {
   Time _time = locator<Time>();
+  AuthenticationService _authenticationService =
+      locator<AuthenticationService>();
 
   List<FamilyCard> _families = [];
   String _todayHumanDate;
@@ -20,7 +21,7 @@ class HomeModel extends BaseModel {
     setState(ViewState.Busy);
 
     bool success = true;
-    
+
     await Future.delayed(Duration(seconds: 2));
     setState(ViewState.Idle);
     return success;
@@ -31,6 +32,11 @@ class HomeModel extends BaseModel {
     this._todayHumanDate = _time.getHumanDate(todayDateTime);
 
     bool success = _todayHumanDate != null;
+    return success;
+  }
+
+  Future<bool> logout() async {
+    bool success = await _authenticationService.logout();
     return success;
   }
 }
