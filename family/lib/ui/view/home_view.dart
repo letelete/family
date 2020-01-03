@@ -3,9 +3,11 @@ import 'package:family/core/models/family_card.dart';
 import 'package:family/core/models/user.dart';
 import 'package:family/core/state/view_state.dart';
 import 'package:family/core/viewmodels/home_model.dart';
+import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
+import 'package:family/ui/view/menu_view.dart';
 import 'package:family/ui/widgets/app_bar_title_widget.dart';
 import 'package:family/ui/widgets/family_card_widget.dart';
 import 'package:family/ui/widgets/user_avatar_widget.dart';
@@ -28,10 +30,10 @@ class HomeView extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: _getAppBar(user, model),
-          floatingActionButton: _getFloatingActionButton(),
+          floatingActionButton: _getFloatingActionButton(context),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
+          appBar: _getAppBar(context, user, model),
           body: Column(
             children: <Widget>[
               Visibility(
@@ -42,10 +44,7 @@ class HomeView extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8.0),
-              _getTodayDateText(
-                date: model.todayHumanDate,
-                parentWidth: parentWidth,
-              ),
+              _getTodayDateText(model.todayHumanDate, parentWidth),
               SizedBox(height: 8.0),
               Expanded(
                 child:
@@ -60,7 +59,12 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _getAppBar(User loggedInUser, HomeModel model) => AppBar(
+  Widget _getAppBar(
+    BuildContext context,
+    User loggedInUser,
+    HomeModel model,
+  ) =>
+      AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: AppColors.background,
         title: AppBarTitle(title: 'My families'),
@@ -68,6 +72,12 @@ class HomeView extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(right: 16.0),
             child: UserAvatarWidget(
+              onTap: () {
+                final List<MenuTile> menuTiles = _getMenuTiles(context, model);
+                return Navigator.of(context).push(
+                  MenuRouteView(children: menuTiles),
+                );
+              },
               name: loggedInUser.name,
               photoUrl: loggedInUser.photoUrl,
               size: 40.0,
@@ -76,7 +86,11 @@ class HomeView extends StatelessWidget {
         ],
       );
 
-  Widget _getTodayDateText({String date, double parentWidth}) => Container(
+  Widget _getTodayDateText(
+    String date,
+    double parentWidth,
+  ) =>
+      Container(
         width: parentWidth,
         color: AppColors.homeTodayDateBackground,
         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -109,7 +123,7 @@ class HomeView extends StatelessWidget {
         ),
       );
 
-  Widget _getFloatingActionButton() => Container(
+  Widget _getFloatingActionButton(BuildContext context) => Container(
         alignment: Alignment.bottomCenter,
         margin: EdgeInsets.only(bottom: 32.0),
         child: FloatingActionButton.extended(
@@ -119,4 +133,31 @@ class HomeView extends StatelessWidget {
           onPressed: () {},
         ),
       );
+
+  List<MenuTile> _getMenuTiles(
+    BuildContext context,
+    HomeModel model,
+  ) {
+    return <MenuTile>[
+      MenuTile(
+        title: 'Logout',
+        onTap: () async {
+          bool sucess = await model.logout();
+          if (sucess) {
+            return Navigator.pushNamedAndRemoveUntil(
+              context,
+              Paths.loginView,
+              (Route<dynamic> route) => false,
+            );
+          }
+          // TODO: Handle error.
+          return null;
+        },
+      ),
+      MenuTile(
+        title: 'Cancel',
+        onTap: () => Navigator.pop(context),
+      )
+    ];
+  }
 }
