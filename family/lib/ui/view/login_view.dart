@@ -16,19 +16,10 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BaseView<LoginModel>(
+      onModelReady: (model) =>  _authenticate(context, model),
       builder: (context, model, child) => Scaffold(
         body: InkWell(
-          onTap: () async {
-            bool success = await model.login();
-            if (success) {
-              return Navigator.pushNamedAndRemoveUntil(
-                context,
-                Paths.homeView,
-                (Route<dynamic> route) => false,
-              );
-            }
-            return null; // TODO: Handle error
-          },
+          onTap: () => _authenticate(context, model),
           child: Container(
             decoration: BoxDecoration(gradient: AppGradients.backgroundSolid),
             child: Column(
@@ -70,5 +61,17 @@ class _LoginViewState extends State<LoginView> {
         ),
       ),
     );
+  }
+
+  Future<void> _authenticate(BuildContext context, LoginModel model)  async {
+    bool success = await model.login();
+    if (success) {
+      return Navigator.pushNamedAndRemoveUntil(
+        context,
+        Paths.homeView,
+        (Route<dynamic> route) => false,
+      );
+    }
+    return null; // TODO: Handle error
   }
 }
