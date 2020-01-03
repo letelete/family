@@ -12,7 +12,8 @@ class User {
         photoUrl = '';
 
   User.fromFirebaseUser(FirebaseUser user)
-      : id = user.providerId,
+      : assert(user != null),
+        id = user.providerId,
         name = user.displayName,
         photoUrl = user.photoUrl;
 }
