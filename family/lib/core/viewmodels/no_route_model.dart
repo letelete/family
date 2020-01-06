@@ -1,5 +1,5 @@
 import 'package:family/base/base_model.dart';
-import 'package:family/core/state/view_state.dart';
+import 'package:family/core/enums/view_state.dart';
 
 const int _redirectionDurationDefault = 3;
 
@@ -15,10 +15,10 @@ class NoRouteModel extends BaseModel {
     }
 
     while (_redirectionTimeout.inSeconds > 0) {
-      setState(ViewState.Busy);
+      setState(ViewState.busy);
       await Future.delayed(Duration(seconds: 1));
       this._redirectionTimeout -= Duration(seconds: 1);
-      setState(ViewState.Idle);
+      setState(ViewState.idle);
     }
     return true;
   }

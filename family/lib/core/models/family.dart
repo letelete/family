@@ -1,6 +1,5 @@
+import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/models/member.dart';
-
-enum SubscriptionType { WEEKLY, MONTHLY, YEARLY }
 
 class Family {
   final DateTime paymentDay;
@@ -22,4 +21,12 @@ class Family {
         assert(price != null && price != ''),
         assert(subscriptionType != null),
         assert(members != null);
+
+  const Family.initial()
+      : this.paymentDay = null,
+        this.name = null,
+        this.price = null,
+        this.subscriptionType = null,
+        this.members = const <Member>[],
+        this.photoUrl = null;
 }

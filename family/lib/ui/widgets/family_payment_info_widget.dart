@@ -1,12 +1,12 @@
-import 'package:family/core/models/family.dart';
+import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
 import 'package:flutter/cupertino.dart';
 
 const Map<SubscriptionType, String> _subscriptionNames = {
-  SubscriptionType.WEEKLY: 'week',
-  SubscriptionType.MONTHLY: 'month',
-  SubscriptionType.YEARLY: 'year',
+  SubscriptionType.weekly: 'week',
+  SubscriptionType.monthly: 'month',
+  SubscriptionType.yearly: 'year',
 };
 
 class FamilyPaymentInfoWidget extends StatelessWidget {

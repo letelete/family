@@ -1,8 +1,8 @@
 import 'package:family/base/base_model.dart';
+import 'package:family/core/enums/view_state.dart';
 import 'package:family/core/models/family_card.dart';
 import 'package:family/core/services/authentication_service.dart';
 import 'package:family/core/services/time.dart';
-import 'package:family/core/state/view_state.dart';
 import 'package:family/locator.dart';
 
 class HomeModel extends BaseModel {
@@ -18,12 +18,12 @@ class HomeModel extends BaseModel {
 
   // Todo:
   Future<bool> fetchFamilies() async {
-    setState(ViewState.Busy);
+    setState(ViewState.busy);
 
     bool success = true;
 
     await Future.delayed(Duration(seconds: 2));
-    setState(ViewState.Idle);
+    setState(ViewState.idle);
     return success;
   }
 

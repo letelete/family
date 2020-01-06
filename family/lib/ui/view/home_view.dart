@@ -1,7 +1,9 @@
 import 'package:family/base/base_view.dart';
+import 'package:family/core/enums/view_state.dart';
+import 'package:family/core/models/build_data.dart';
+import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
 import 'package:family/core/models/user.dart';
-import 'package:family/core/state/view_state.dart';
 import 'package:family/core/viewmodels/home_model.dart';
 import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
@@ -37,7 +39,7 @@ class HomeView extends StatelessWidget {
           body: Column(
             children: <Widget>[
               Visibility(
-                visible: model.viewState == ViewState.Busy,
+                visible: model.viewState == ViewState.busy,
                 child: LinearProgressIndicator(
                   backgroundColor: Colors.black,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
@@ -48,7 +50,7 @@ class HomeView extends StatelessWidget {
               SizedBox(height: 8.0),
               Expanded(
                 child:
-                    model.viewState == ViewState.Idle && model.families.isEmpty
+                    model.viewState == ViewState.idle && model.families.isEmpty
                         ? _noFamiliesPlaceholder()
                         : _getFamilyList(model.families),
               ),

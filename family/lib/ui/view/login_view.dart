@@ -1,5 +1,5 @@
 import 'package:family/base/base_view.dart';
-import 'package:family/core/state/view_state.dart';
+import 'package:family/core/enums/view_state.dart';
 import 'package:family/core/viewmodels/login_model.dart';
 import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
@@ -16,7 +16,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return BaseView<LoginModel>(
-      onModelReady: (model) =>  _authenticate(context, model),
+      onModelReady: (model) => _authenticate(context, model),
       builder: (context, model, child) => Scaffold(
         body: InkWell(
           onTap: () => _authenticate(context, model),
@@ -49,7 +49,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 Visibility(
-                  visible: model.viewState == ViewState.Busy,
+                  visible: model.viewState == ViewState.busy,
                   child: LinearProgressIndicator(
                     backgroundColor: Colors.black,
                     valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
@@ -63,7 +63,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Future<void> _authenticate(BuildContext context, LoginModel model)  async {
+  Future<void> _authenticate(BuildContext context, LoginModel model) async {
     bool success = await model.login();
     if (success) {
       return Navigator.pushNamedAndRemoveUntil(
