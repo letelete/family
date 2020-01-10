@@ -1,4 +1,5 @@
-import 'package:family/core/enums/builder_response.dart';
+import 'package:family/core/enums/build_responses.dart';
+import 'package:family/core/models/build_data.dart';
 import 'package:family/core/models/build_progress.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/gradients.dart';
@@ -25,11 +26,14 @@ const Duration _pageAnimationDuration = Duration(milliseconds: 580);
 ///   int age;
 /// }
 /// ```
+/// [T] is a generic class for holding a data class of created model inside the builder view.
+///
 /// [children] should consist of 2 views.
 /// The first one should be a TextField to fill the [name] field.
 /// The second one could be a TextField as well, which would fill the [age] field.
 /// The second view is the last given view, which means the [finalStepButtonLabel] would be used for
-/// a next step button, and its onTap action would close the builder dialog and return [BuilderResponses.success].
+/// a next step button, and its onTap action would trigger [onFinishBuild] function, which returns [BuildData] model
+/// which is simply a data created during the builder view runtime.
 ///
 /// [BaseBuilderView] consist of 3 main elements.
 /// 1. Header - A view title (one of the [titles] strings),
@@ -40,7 +44,7 @@ const Duration _pageAnimationDuration = Duration(milliseconds: 580);
 /// b) The next step button:
 ///    Controls a flow of the configuration.
 ///    Depending of [viewValidated] can be either enabled or disabled.
-class BaseBuilderView extends StatefulWidget {
+class BaseBuilderView<T> extends StatefulWidget {
   /// The list of views specifying particular configurational behavior.
   final List<Widget> children;
 
@@ -58,6 +62,12 @@ class BaseBuilderView extends StatefulWidget {
   /// else: next actions are disabled.
   final bool viewValidated;
 
+  /// Triggers when view has changed.
+  final Function onViewChange;
+
+  /// Triggers when builder is on the last screen and next step button has been clicked.
+  final BuildData Function() onFinishBuild;
+
   const BaseBuilderView({
     Key key,
     this.children,
@@ -65,6 +75,8 @@ class BaseBuilderView extends StatefulWidget {
     this.nextStepButtonLabel,
     this.finalStepButtonLabel,
     this.viewValidated,
+    this.onViewChange,
+    this.onFinishBuild,
   })  : assert(children != null && children.length > 0,
             'Length of pages must be a positive number'),
         assert(titles != null),
@@ -73,11 +85,12 @@ class BaseBuilderView extends StatefulWidget {
         assert(finalStepButtonLabel != null),
         assert(nextStepButtonLabel != null),
         assert(viewValidated != null),
+        assert(onFinishBuild != null),
         super(key: key);
 
   @override
   _BaseBuilderViewState createState() {
-    return _BaseBuilderViewState(
+    return _BaseBuilderViewState<T>(
       buildProgress: BuildProgress(
         currentIndex: 0,
         lastIndex: children.length - 1,
@@ -86,7 +99,7 @@ class BaseBuilderView extends StatefulWidget {
   }
 }
 
-class _BaseBuilderViewState extends State<BaseBuilderView> {
+class _BaseBuilderViewState<T> extends State<BaseBuilderView> {
   final controller = PageController(initialPage: 0);
   final BuildProgress buildProgress;
 
@@ -123,9 +136,26 @@ class _BaseBuilderViewState extends State<BaseBuilderView> {
       ),
     );
 
+    Widget exitAndDiscardChangesDialog = AlertDialog(
+      title: Text('Exit and discard all changes?'),
+      actions: <Widget>[
+        FlatButton(
+          child: Text('No'),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        FlatButton(
+          child: Text('Yes'),
+          onPressed: () {
+            Navigator.of(context).pop();
+            _closeBuilder();
+          },
+        ),
+      ],
+    );
+
     Widget cancelButton = Expanded(
       child: InkWell(
-        onTap: () => _showExitDialog(),
+        onTap: () => _showDialog(exitAndDiscardChangesDialog),
         child: Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
@@ -230,47 +260,39 @@ class _BaseBuilderViewState extends State<BaseBuilderView> {
     );
   }
 
-  void _showExitDialog() {
+  void _showDialog(AlertDialog dialog) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Exit and discard all changes?'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('No'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            FlatButton(
-              child: Text('Yes'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                _closeBuilder();
-              },
-            ),
-          ],
-        );
+        return dialog;
       },
     );
   }
 
   void _closeBuilder() {
-    Navigator.of(context).pop(BuilderResponses.canceled);
+    FocusScope.of(context).requestFocus(FocusNode());
+
+    final BuildData data = BuildData<T>(response: BuildResponses.cancel);
+    Navigator.of(context).pop(data);
   }
 
   void _nextStep() {
+    FocusScope.of(context).requestFocus(FocusNode());
+
     if (buildProgress.hasReachedEnd()) {
-      finishBuild();
+      _finishBuild();
     } else {
       _openNextPage();
     }
   }
 
-  void finishBuild() {
-    Navigator.of(context).pop(BuilderResponses.success);
+  void _finishBuild() {
+    final BuildData<T> builtData = this.widget.onFinishBuild();
+    Navigator.of(context).pop(builtData);
   }
 
   void _openNextPage() {
+    this.widget.onViewChange();
     setState(() => ++buildProgress.currentIndex);
     controller.nextPage(
       duration: _pageAnimationDuration,

@@ -1,1 +1,0 @@
-enum BuilderResponses { success, canceled }
