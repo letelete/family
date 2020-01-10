@@ -1,16 +1,11 @@
 import 'package:family/core/enums/subscription_type.dart';
+import 'package:family/core/models/price.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
 import 'package:flutter/cupertino.dart';
 
-const Map<SubscriptionType, String> _subscriptionNames = {
-  SubscriptionType.weekly: 'week',
-  SubscriptionType.monthly: 'month',
-  SubscriptionType.yearly: 'year',
-};
-
 class FamilyPaymentInfoWidget extends StatelessWidget {
-  final String price;
+  final Price price;
   final SubscriptionType subscriptionType;
 
   const FamilyPaymentInfoWidget({
@@ -23,14 +18,10 @@ class FamilyPaymentInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> priceParts = price.split(',');
-    String integerPrice = priceParts.length >= 1 ? priceParts[0] : '0';
-    String predecimalWithCurrency =
-        priceParts.length >= 2 ? priceParts[1] : 'USD';
-    String subscriptionTypeName = _subscriptionNames[this.subscriptionType];
+    String subscriptionTypeName = SubscriptionTypeName.asPeriod[this.subscriptionType];
 
-    final String largeContent = integerPrice;
-    final String smallContent = '$predecimalWithCurrency/$subscriptionTypeName';
+    final String largeContent = price.integers.toString();
+    final String smallContent = '${price.decimals}${price.currency}/$subscriptionTypeName';
 
     return Row(
       children: <Widget>[
