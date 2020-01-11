@@ -1,4 +1,5 @@
 import 'package:family/base/base_view.dart';
+import 'package:family/core/enums/build_responses.dart';
 import 'package:family/core/enums/view_state.dart';
 import 'package:family/core/models/build_data.dart';
 import 'package:family/core/models/family.dart';
@@ -32,7 +33,7 @@ class HomeView extends StatelessWidget {
 
         return Scaffold(
           backgroundColor: AppColors.background,
-          floatingActionButton: _getFloatingActionButton(context),
+          floatingActionButton: _getFloatingActionButton(context, model),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerFloat,
           appBar: _getAppBar(context, user, model),
@@ -125,14 +126,33 @@ class HomeView extends StatelessWidget {
         ),
       );
 
-  Widget _getFloatingActionButton(BuildContext context) => Container(
+  Widget _getFloatingActionButton(
+    BuildContext context,
+    HomeModel model,
+  ) =>
+      Container(
         alignment: Alignment.bottomCenter,
         margin: EdgeInsets.only(bottom: 32.0),
         child: FloatingActionButton.extended(
           label: const Text("ADD NEW FAMILY"),
           foregroundColor: AppColors.textPrimary,
           backgroundColor: AppColors.primaryAccent,
-          onPressed: () {},
+          onPressed: () async {
+            var data = await Navigator.pushNamed(
+              context,
+              Paths.familyNameBuilder,
+            );
+
+            if (data == null) return;
+            if ((data as BuildData).response == BuildResponses.cancel) return;
+
+            BuildData<Family> buildData = data;
+            if (buildData.response == BuildResponses.success) {
+              
+            } else {
+              // TODO: Handle error.
+            }
+          },
         ),
       );
 
