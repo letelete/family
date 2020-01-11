@@ -24,33 +24,24 @@ class FamilyCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = MediaQuery.of(context).size.width;
-    return Container(
-      height: _cardHeight,
-      width: cardWidth,
-      color: AppColors.background,
-      child: Stack(
-        children: <Widget>[
-          _getImage(),
-          _getImageGradient(parentWidth: cardWidth),
-          _getForeground(),
-        ],
+    return InkWell(
+      onTap: () {},
+      child: Container(
+        height: _cardHeight,
+        width: cardWidth,
+        color: AppColors.background,
+        child: Stack(
+          children: <Widget>[
+            _getImage(),
+            _getImageGradient(parentWidth: cardWidth),
+            _getForeground(),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _getImage() => Center(
-        child: familyCard.family.photoUrl != null
-            ? _getNetworkImage()
-            : _getPlaceholderPhoto(),
-      );
-
-  Widget _getNetworkImage() => Image.network(
-        familyCard.family.photoUrl,
-        fit: BoxFit.cover,
-        height: double.infinity,
-        width: double.infinity,
-        alignment: Alignment.center,
-      );
+  Widget _getImage() => Center(child: _getPlaceholderPhoto());
 
   Widget _getPlaceholderPhoto() => SvgPicture.asset(
         Assets.familyCoverPhotoPlaceholder,

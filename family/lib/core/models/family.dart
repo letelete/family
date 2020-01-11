@@ -1,32 +1,34 @@
 import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/models/member.dart';
+import 'package:family/core/models/price.dart';
+import 'package:uuid/uuid.dart';
 
 class Family {
-  final DateTime paymentDay;
+  final String id;
   final String name;
-  final String price;
+  final DateTime paymentDay;
+  final Price price;
   final SubscriptionType subscriptionType;
   final List<Member> members;
-  final String photoUrl;
 
   const Family({
-    this.paymentDay,
+    this.id,
     this.name,
+    this.paymentDay,
     this.price,
     this.subscriptionType,
     this.members,
-    this.photoUrl,
-  })  : assert(paymentDay != null),
+  })  : assert(id != null && id != ''),
         assert(name != null && name != ''),
-        assert(price != null && price != ''),
+        assert(paymentDay != null),
+        assert(price != null),
         assert(subscriptionType != null),
         assert(members != null);
 
-  const Family.initial()
-      : this.paymentDay = null,
-        this.name = null,
-        this.price = null,
-        this.subscriptionType = null,
-        this.members = const <Member>[],
-        this.photoUrl = null;
+  static String formatName(String name) {
+    name.trim();
+    return '${name[0].toUpperCase()}${name.substring(1).toLowerCase()}';
+  }
+
+  static String generateId() => Uuid().v1();
 }
