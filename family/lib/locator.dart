@@ -19,7 +19,6 @@ void setupLocator() {
   locator.registerLazySingleton(() => AuthenticationService());
   locator.registerLazySingleton(() => Api());
   locator.registerLazySingleton(() => StorageService());
-  locator.registerLazySingleton(() => Time());
 
   locator.registerLazySingleton(() => DateTimeSerializer());
   locator.registerLazySingleton(() => FamilySerializer());
