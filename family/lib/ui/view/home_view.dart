@@ -117,7 +117,13 @@ class HomeView extends StatelessWidget {
           itemCount: model.families.length,
           itemBuilder: (BuildContext context, int position) {
             final FamilyCard familyCard = model.families.elementAt(position);
-            return FamilyCardWidget(familyCard: familyCard);
+            return FamilyCardWidget(
+              familyCard: familyCard,
+              onTap: (Family family) => Navigator.of(context).pushNamed(
+                Paths.familyView,
+                arguments: family,
+              ),
+            );
           },
         );
 

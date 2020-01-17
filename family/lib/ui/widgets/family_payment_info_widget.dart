@@ -7,23 +7,30 @@ import 'package:flutter/cupertino.dart';
 class FamilyPaymentInfoWidget extends StatelessWidget {
   final Price price;
   final SubscriptionType subscriptionType;
+  final MainAxisAlignment mainAxisAlignment;
 
   const FamilyPaymentInfoWidget({
     Key key,
     this.price,
     this.subscriptionType,
+    this.mainAxisAlignment,
   })  : assert(price != null),
         assert(subscriptionType != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String subscriptionTypeName = SubscriptionTypeName.asPeriod[this.subscriptionType];
+    final String subscriptionTypeName =
+        SubscriptionTypeName.asPeriod[this.subscriptionType];
 
+    final MainAxisAlignment mainAxisAlignment =
+        this.mainAxisAlignment ?? MainAxisAlignment.start;
     final String largeContent = price.integers.toString();
-    final String smallContent = '${price.decimals}${price.currency}/$subscriptionTypeName';
+    final String smallContent =
+        '${price.decimals}${price.currency}/$subscriptionTypeName';
 
     return Row(
+      mainAxisAlignment: mainAxisAlignment,
       children: <Widget>[
         _getLargeText(largeContent),
         _getSmallText(smallContent),

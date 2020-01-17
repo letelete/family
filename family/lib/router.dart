@@ -1,6 +1,7 @@
 import 'package:family/core/models/build_data.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/ui/view/builder_view/family/family_builder.dart';
+import 'package:family/ui/view/family_view.dart';
 import 'package:family/ui/view/login_view.dart';
 import 'package:family/ui/view/no_route_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,7 @@ class Paths {
   static const String loginView = 'login';
   static const String homeView = '/';
   static const String familyNameBuilder = 'familyNameBuilder';
+  static const String familyView = 'familyView';
 }
 
 Map<String, PageRoute> _routes(RouteSettings settings) => {
@@ -23,6 +25,10 @@ Map<String, PageRoute> _routes(RouteSettings settings) => {
       Paths.familyNameBuilder: MaterialPageRoute(builder: (_) {
         final data = settings.arguments as BuildData<Family>;
         return FamilyNameBuilder(buildData: data);
+      }),
+      Paths.familyView: MaterialPageRoute(builder: (_) {
+        final family = settings.arguments as Family;
+        return FamilyView(family);
       }),
     };
 
