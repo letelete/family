@@ -49,7 +49,7 @@ class FamilySerializer extends Converter<Map, Family> {
         paymentDay: paymentDay,
         price: price,
         subscriptionType: subscriptionType,
-        members: [],
+        members: members,
       );
     } catch (e) {
       print('FamilySerializer. Could not create Family object. ${e.toString()}');
