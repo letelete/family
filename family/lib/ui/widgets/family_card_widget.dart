@@ -1,10 +1,11 @@
+import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
 import 'package:family/core/models/member.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
-import 'package:family/ui/shared/gradients.dart';
 import 'package:family/ui/shared/sizes.dart';
 import 'package:family/ui/widgets/family_payment_info_widget.dart';
+import 'package:family/ui/widgets/gradient_fade_container.dart';
 import 'package:family/ui/widgets/overlapping_avatars_widget.dart';
 import 'package:family/ui/widgets/user_avatar_widget.dart';
 import 'package:flutter/material.dart';
@@ -14,29 +15,23 @@ const double _cardHeight = 250.0;
 
 class FamilyCardWidget extends StatelessWidget {
   final FamilyCard familyCard;
+  final Function(Family) onTap;
 
   const FamilyCardWidget({
     Key key,
     this.familyCard,
+    this.onTap,
   })  : assert(familyCard != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final cardWidth = MediaQuery.of(context).size.width;
     return InkWell(
-      onTap: () {},
-      child: Container(
+      onTap: onTap == null ? null : () => onTap(familyCard.family),
+      child: GradientFadeContainer(
         height: _cardHeight,
-        width: cardWidth,
-        color: AppColors.background,
-        child: Stack(
-          children: <Widget>[
-            _getImage(),
-            _getImageGradient(parentWidth: cardWidth),
-            _getForeground(),
-          ],
-        ),
+        background: _getImage(),
+        foreground: _getForeground(),
       ),
     );
   }
@@ -50,12 +45,6 @@ class FamilyCardWidget extends StatelessWidget {
         height: double.infinity,
         width: double.infinity,
         alignment: Alignment.center,
-      );
-
-  Widget _getImageGradient({@required double parentWidth}) => Container(
-        width: parentWidth,
-        height: _cardHeight,
-        decoration: BoxDecoration(gradient: AppGradients.familyPhotoCover),
       );
 
   Widget _getForeground() => Positioned(
