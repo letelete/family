@@ -2,25 +2,26 @@ import 'dart:convert';
 
 import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/models/family.dart';
-import 'package:family/core/models/member.dart';
+import 'package:family/core/models/member_preview.dart';
 import 'package:family/core/models/price.dart';
 import 'package:family/core/serializers/date_time_serializer.dart';
-import 'package:family/core/serializers/member_serializer.dart';
+import 'package:family/core/serializers/members_preview_serializer.dart';
 import 'package:family/core/serializers/price_serializer.dart';
 import 'package:family/core/serializers/subscription_type_serializer.dart';
 import 'package:family/locator.dart';
 
-const _id = 'id';
-const _name = 'name';
-const _paymentDay = 'paymentDay';
-const _price = 'price';
-const _subscriptionType = 'subscripionType';
-const _members = 'members';
-
 class FamilySerializer extends Converter<Map, Family> {
+  static const idKey = 'id';
+  static const nameKey = 'name';
+  static const paymentDayKey = 'payment_day';
+  static const priceKey = 'price';
+  static const subscriptionTypeKey = 'subscripion_type';
+  static const membersPreviewKey = 'members_preview';
+
   PriceSerializer _priceSerializer = locator<PriceSerializer>();
   DateTimeSerializer _dateTimeSerializer = locator<DateTimeSerializer>();
-  MemberSerializer _memberSerializer = locator<MemberSerializer>();
+  MemberPreviewSerializer _memberPreviewSerializer =
+      locator<MemberPreviewSerializer>();
   SubscriptionTypeSerializer _subscriptionTypeSerializer =
       locator<SubscriptionTypeSerializer>();
 
@@ -31,14 +32,18 @@ class FamilySerializer extends Converter<Map, Family> {
       return null;
     }
 
-    final String id = input[_id];
-    final String name = input[_name];
-    final DateTime paymentDay = _dateTimeSerializer.convert(input[_paymentDay]);
-    final Price price = _priceSerializer.convert(input[_price]);
+    final String id = input[idKey];
+    final String name = input[nameKey];
+    final DateTime paymentDay =
+        _dateTimeSerializer.convert(input[paymentDayKey]);
+    final Price price = _priceSerializer.convert(input[priceKey]);
     final SubscriptionType subscriptionType =
-        _subscriptionTypeSerializer.convert(input[_subscriptionType]);
-    final List<Member> members =
-        _memberSerializer.convert(input[_members]).toList();
+        _subscriptionTypeSerializer.convert(input[subscriptionTypeKey]);
+
+    List membersPreviewAsJson = input[membersPreviewKey];
+    final List<MemberPreview> membersPreview = membersPreviewAsJson
+        .map((previewAsJson) => _memberPreviewSerializer.convert(previewAsJson))
+        .toList();
 
     Family family;
 
@@ -49,10 +54,11 @@ class FamilySerializer extends Converter<Map, Family> {
         paymentDay: paymentDay,
         price: price,
         subscriptionType: subscriptionType,
-        members: members,
+        membersPreview: membersPreview,
       );
     } catch (e) {
-      print('FamilySerializer. Could not create Family object. ${e.toString()}');
+      print(
+          'FamilySerializer. Could not create Family object. ${e.toString()}');
     }
 
     return family;
@@ -60,14 +66,18 @@ class FamilySerializer extends Converter<Map, Family> {
 }
 
 extension FamilyToJson on Family {
+  List<Map> membersPreviewAsJson(List<MemberPreview> membersPreview) =>
+      membersPreview.map((MemberPreview preview) => preview.toJson()).toList();
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      _id: this.id,
-      _name: this.name,
-      _paymentDay: this.paymentDay.toJson(),
-      _price: this.price.toJson(),
-      _subscriptionType: this.subscriptionType.toString(),
-      _members: this.members.map((member) => member.toJson()).toList(),
+      FamilySerializer.idKey: this.id,
+      FamilySerializer.nameKey: this.name,
+      FamilySerializer.paymentDayKey: this.paymentDay.toJson(),
+      FamilySerializer.priceKey: this.price.toJson(),
+      FamilySerializer.subscriptionTypeKey: this.subscriptionType.toString(),
+      FamilySerializer.membersPreviewKey:
+          membersPreviewAsJson(this.membersPreview),
     };
   }
 }

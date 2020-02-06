@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:family/core/models/price.dart';
 
-const _integers = 'integers';
-const _decimals = 'decimals';
-const _currency = 'currency';
-
 class PriceSerializer extends Converter<Map, Price> {
+  static const integersKey = 'integers';
+  static const decimalsKey = 'decimals';
+  static const currencyKey = 'currency';
+
   @override
   Price convert(Map input) {
     if (input == null) {
@@ -14,9 +14,9 @@ class PriceSerializer extends Converter<Map, Price> {
       return null;
     }
 
-    final int integers = int.parse(input[_integers]);
-    final int decimals = int.parse(input[_decimals]);
-    final String currency = input[_currency];
+    final int integers = int.parse(input[integersKey]);
+    final int decimals = int.parse(input[decimalsKey]);
+    final String currency = input[currencyKey];
 
     Price price;
 
@@ -37,9 +37,9 @@ class PriceSerializer extends Converter<Map, Price> {
 extension PriceToJson on Price {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      _integers: this.integers.toString(),
-      _decimals: this.decimals.toString(),
-      _currency: this.currency
+      PriceSerializer.integersKey: this.integers.toString(),
+      PriceSerializer.decimalsKey: this.decimals.toString(),
+      PriceSerializer.currencyKey: this.currency
     };
   }
 }

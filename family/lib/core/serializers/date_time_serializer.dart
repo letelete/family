@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-const _date = 'date';
-
 class DateTimeSerializer extends Converter<Map, DateTime> {
+  static const dateKey = 'date';
+
   @override
   DateTime convert(Map input) {
     if (input == null) {
@@ -12,7 +12,7 @@ class DateTimeSerializer extends Converter<Map, DateTime> {
 
     DateTime dateTime;
     try {
-      dateTime = DateTime.parse(input[_date]);
+      dateTime = DateTime.parse(input[dateKey]);
     } catch (e) {
       print('DateTimeSerializer: Error on parsing date time. ${e.toString()}');
     }
@@ -23,6 +23,8 @@ class DateTimeSerializer extends Converter<Map, DateTime> {
 
 extension DateTimeToJson on DateTime {
   Map toJson() {
-    return <String, dynamic>{_date: this.toIso8601String()};
+    return <String, dynamic>{
+      DateTimeSerializer.dateKey: this.toIso8601String()
+    };
   }
 }

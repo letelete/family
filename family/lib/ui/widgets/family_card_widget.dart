@@ -1,6 +1,6 @@
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
-import 'package:family/core/models/member.dart';
+import 'package:family/core/models/member_preview.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
@@ -98,13 +98,13 @@ class FamilyCardWidget extends StatelessWidget {
       );
 
   Widget _getMemberAvatars() {
-    if (familyCard.family.members.isEmpty) return Container();
+    if (familyCard.family.membersPreview.isEmpty) return Container();
 
     final double avatarSize = 24.0;
-    List<Widget> avatars = familyCard.family.members
-        .map((Member member) => UserAvatarWidget(
-              photoUrl: member.photoUrl,
-              name: member.name,
+    List<Widget> avatars = familyCard.family.membersPreview
+        .map((MemberPreview preview) => UserAvatarWidget(
+              photoUrl: preview.photoUrl,
+              name: preview.name,
               size: avatarSize,
             ))
         .toList();

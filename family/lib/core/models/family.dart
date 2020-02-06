@@ -1,5 +1,5 @@
 import 'package:family/core/enums/subscription_type.dart';
-import 'package:family/core/models/member.dart';
+import 'package:family/core/models/member_preview.dart';
 import 'package:family/core/models/price.dart';
 import 'package:uuid/uuid.dart';
 
@@ -9,7 +9,7 @@ class Family {
   final DateTime paymentDay;
   final Price price;
   final SubscriptionType subscriptionType;
-  final List<Member> members;
+  final List<MemberPreview> membersPreview;
 
   const Family({
     this.id,
@@ -17,18 +17,13 @@ class Family {
     this.paymentDay,
     this.price,
     this.subscriptionType,
-    this.members,
+    this.membersPreview,
   })  : assert(id != null && id != ''),
         assert(name != null && name != ''),
         assert(paymentDay != null),
         assert(price != null),
         assert(subscriptionType != null),
-        assert(members != null);
-
-  static String formatName(String name) {
-    name.trim();
-    return '${name[0].toUpperCase()}${name.substring(1).toLowerCase()}';
-  }
+        assert(membersPreview != null);
 
   static String generateId() => Uuid().v1();
 }

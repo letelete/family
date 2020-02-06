@@ -2,9 +2,9 @@ import 'package:family/base/base_model.dart';
 import 'package:family/core/enums/build_responses.dart';
 import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/enums/view_state.dart';
-import 'package:family/core/models/build_data.dart';
+import 'package:family/core/models/build_data/build_data.dart';
 import 'package:family/core/models/family.dart';
-import 'package:family/core/models/member.dart';
+import 'package:family/core/models/member_preview.dart';
 import 'package:family/core/models/price.dart';
 
 class FamilyBuilderModel extends BaseModel {
@@ -94,13 +94,13 @@ class FamilyBuilderModel extends BaseModel {
     setState(ViewState.busy);
 
     final String id = this.family?.id ?? Family.generateId();
-    final String name =
-        this._name != null ? Family.formatName(this._name) : this.family?.name;
+    final String name = this._name != null ? this._name : this.family?.name;
     final DateTime paymentDay = this._paymentDay ?? this.family?.paymentDay;
     final Price price = this._price ?? this.family?.price;
     final SubscriptionType subscriptionType =
         this._subscriptionType ?? this.family?.subscriptionType;
-    final List<Member> members = this.family?.members ?? <Member>[];
+    final List<MemberPreview> membersPreview =
+        this.family?.membersPreview ?? [];
 
     if (id == null ||
         name == null ||
@@ -117,7 +117,7 @@ class FamilyBuilderModel extends BaseModel {
       paymentDay: paymentDay,
       price: price,
       subscriptionType: subscriptionType,
-      members: members,
+      membersPreview: membersPreview,
     );
 
     this._buildData = BuildData<Family>(

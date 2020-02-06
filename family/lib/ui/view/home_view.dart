@@ -1,7 +1,7 @@
 import 'package:family/base/base_view.dart';
 import 'package:family/core/enums/build_responses.dart';
 import 'package:family/core/enums/view_state.dart';
-import 'package:family/core/models/build_data.dart';
+import 'package:family/core/models/build_data/build_data.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
 import 'package:family/core/models/user.dart';
@@ -22,17 +22,17 @@ import 'package:provider/provider.dart';
 class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final User user = Provider.of<User>(context);
+    final FloatingActionButtonLocation floatingActionButtonLocation =
+        FloatingActionButtonLocation.centerFloat;
+    final double parentWidth = MediaQuery.of(context).size.width;
+
     return BaseView<HomeModel>(
       onModelReady: (model) {
-        model.fetchFamilies();
+        model.fetchFamilies(user.id);
         model.fetchTodayDate();
       },
       builder: (context, model, child) {
-        final User user = Provider.of<User>(context);
-        final double parentWidth = MediaQuery.of(context).size.width;
-        final FloatingActionButtonLocation floatingActionButtonLocation =
-            FloatingActionButtonLocation.centerFloat;
-
         Widget logoutMenuTile = MenuTile(
           title: 'Logout',
           onTap: () async {
@@ -86,7 +86,9 @@ class HomeView extends StatelessWidget {
             label: const Text("ADD NEW FAMILY"),
             foregroundColor: AppColors.textPrimary,
             backgroundColor: AppColors.primaryAccent,
-            onPressed: () => _showFamilyBuilderForResults(context, model),
+            onPressed: () {
+              return _showFamilyBuilderForResults(context, model, user.id);
+            },
           ),
         );
 
@@ -164,10 +166,11 @@ class HomeView extends StatelessWidget {
   Future<void> _showFamilyBuilderForResults(
     BuildContext context,
     HomeModel model,
+    String userId,
   ) async {
     final data = await Navigator.pushNamed(
       context,
-      Paths.familyNameBuilder,
+      Paths.familyBuilder,
     );
     BuildData<Family> buildData = data as BuildData<Family>;
     bool noNeedToUpdateView =
@@ -176,7 +179,7 @@ class HomeView extends StatelessWidget {
 
     Family family = buildData.product;
     if (buildData.response == BuildResponses.success) {
-      bool error = !await model.addNewFamily(family);
+      bool error = !await model.addNewFamily(userId, family);
       if (error) print('Error adding new family: ${family.toString()}');
     } else {
       print('BuildData has unsuccessful response: ${buildData.toString()}');

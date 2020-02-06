@@ -3,7 +3,7 @@ import 'package:family/core/enums/view_state.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
 import 'package:family/core/services/authentication_service.dart';
-import 'package:family/core/services/storage.dart';
+import 'package:family/core/services/storage_service.dart';
 import 'package:family/core/services/time.dart';
 import 'package:family/locator.dart';
 
@@ -18,9 +18,9 @@ class HomeModel extends BaseModel {
   List<FamilyCard> get families => _families;
   String get todayHumanDate => _todayHumanDate;
 
-  Future<bool> fetchFamilies() async {
+  Future<bool> fetchFamilies(String userId) async {
     setState(ViewState.busy);
-    List<Family> data = await _storageService.getUserFamilies();
+    List<Family> data = await _storageService.getUserFamilies(userId);
     bool success = data != null;
     if (success) {
       _families = data.map((family) => FamilyCard.fromFamily(family)).toList();
@@ -40,9 +40,9 @@ class HomeModel extends BaseModel {
     return success;
   }
 
-  Future<bool> addNewFamily(Family family) async {
+  Future<bool> addNewFamily(String userId, Family family) async {
     setState(ViewState.busy);
-    bool success = await _storageService.addNewFamily(family);
+    bool success = await _storageService.addUserFamily(userId, family);
     if (success) {
       FamilyCard newFamilyCard = FamilyCard.fromFamily(family);
       _families.add(newFamilyCard);

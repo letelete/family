@@ -6,7 +6,7 @@ class FamilyCard {
   final String humanPaymentDate;
   final String daysBeforePayment;
 
-  FamilyCard({
+  const FamilyCard({
     this.family,
     this.humanPaymentDate,
     this.daysBeforePayment,

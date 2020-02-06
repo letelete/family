@@ -1,6 +1,6 @@
 import 'package:family/core/enums/build_responses.dart';
-import 'package:family/core/models/build_data.dart';
-import 'package:family/core/models/build_progress.dart';
+import 'package:family/core/models/build_data/build_data.dart';
+import 'package:family/core/models/build_data/build_progress.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/gradients.dart';
 import 'package:family/ui/shared/sizes.dart';

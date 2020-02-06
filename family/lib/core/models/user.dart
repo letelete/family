@@ -13,7 +13,7 @@ class User {
 
   User.fromFirebaseUser(FirebaseUser user)
       : assert(user != null),
-        id = user.providerId,
+        id = user.uid,
         name = user.displayName,
         photoUrl = user.photoUrl;
 }

@@ -11,8 +11,8 @@ SubscriptionType getSubscriptionTypeFromString(String str) {
 
 class SubscriptionTypeName {
   static const Map<SubscriptionType, String> asPeriod = {
-    SubscriptionType.weekly: 'Week',
-    SubscriptionType.monthly: 'Month',
-    SubscriptionType.yearly: 'Year',
+    SubscriptionType.weekly: 'week',
+    SubscriptionType.monthly: 'month',
+    SubscriptionType.yearly: 'year',
   };
 }

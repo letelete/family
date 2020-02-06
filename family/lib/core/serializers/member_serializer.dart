@@ -1,48 +1,70 @@
 import 'dart:convert';
 
 import 'package:family/core/models/member.dart';
+import 'package:family/core/models/subscripton.dart';
+import 'package:family/core/serializers/date_time_serializer.dart';
+import 'package:family/core/serializers/subscription_serializer.dart';
+import 'package:family/locator.dart';
 
-const _name = 'name';
-const _nextPayment = 'nextPayment';
-const _paid = 'paid';
-const _photoUrl = 'photoUrl';
+class MemberSerializer extends Converter<Map, Member> {
+  static const idKey = 'id';
+  static const nameKey = 'name';
+  static const nextPaymentKey = 'next_payment';
+  static const paidKey = 'paid';
+  static const photoUrlKey = 'photo_url';
+  static const subscriptionKey = 'subscription';
 
-class MemberSerializer extends Converter<List, Iterable<Member>> {
+  DateTimeSerializer _dateTimeSerializer = locator<DateTimeSerializer>();
+  SubscriptionSerializer _subscriptionSerializer =
+      locator<SubscriptionSerializer>();
+
   @override
-  Iterable<Member> convert(List input) {
-    List<Member> members = [];
-    if (input == null) {
-      print('MemberSerializer: The input is null.');
-      return members;
-    }
+  Member convert(Map member) {
+    final String id = member[idKey];
+    final String name = member[nameKey];
+    final DateTime nextPayment =
+        _dateTimeSerializer.convert(member[nextPaymentKey]);
+    final bool paid = member[paidKey].toString().toLowerCase() == 'true';
+    final String photoUrl = member[photoUrlKey];
+    final Subscription subscription =
+        _subscriptionSerializer.convert(member[subscriptionKey]);
 
-    List membersJsonArray = input.toList();
-    if (membersJsonArray.isEmpty) return members;
+    Member memberObject;
+
+    if (id == null ||
+        name == null ||
+        nextPayment == null ||
+        paid == null ||
+        subscription == null) {
+      return null;
+    }
 
     try {
-      membersJsonArray
-          .map((member) => Member(
-                name: member[_name],
-                nextPayment: member[_nextPayment],
-                paid: member[_paid],
-                photoUrl: member[_photoUrl],
-              ))
-          .toList();
+      memberObject = Member(
+        id: id,
+        name: name,
+        nextPayment: nextPayment,
+        paid: paid,
+        photoUrl: photoUrl,
+        subscription: subscription,
+      );
     } catch (e) {
-      print('MemberSerializer: Error while parsing members. ${e.toString()}');
+      print('MemberSerializer: Error building a member. ${e.toString()}');
     }
 
-    return members;
+    return memberObject;
   }
 }
 
 extension MemberToJson on Member {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      _name: this.name,
-      _nextPayment: this.nextPayment,
-      _paid: this.paid.toString(),
-      _photoUrl: this.photoUrl,
+      MemberSerializer.idKey: this.id,
+      MemberSerializer.nameKey: this.name,
+      MemberSerializer.nextPaymentKey: this.nextPayment.toJson(),
+      MemberSerializer.paidKey: this.paid.toString(),
+      MemberSerializer.photoUrlKey: this.photoUrl,
+      MemberSerializer.subscriptionKey: this.subscription.toJson(),
     };
   }
 }

@@ -1,90 +1,130 @@
+import 'package:family/base/base_view.dart';
+import 'package:family/core/enums/build_responses.dart';
+import 'package:family/core/models/build_data/build_data.dart';
+import 'package:family/core/models/build_data/member_build_data.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
+import 'package:family/core/models/member.dart';
+import 'package:family/core/models/user.dart';
+import 'package:family/core/viewmodels/family_model.dart';
+import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
 import 'package:family/ui/widgets/family_payment_info_widget.dart';
 import 'package:family/ui/widgets/gradient_fade_container.dart';
+import 'package:family/ui/widgets/member_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class FamilyView extends StatelessWidget {
   final Family family;
 
-  const FamilyView(this.family, {Key key}) : super(key: key);
+  const FamilyView(this.family, {Key key})
+      : assert(family != null),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final familyCard = FamilyCard.fromFamily(family);
+    final User user = Provider.of<User>(context);
+    final FamilyCard familyCard = FamilyCard.fromFamily(family);
 
-    List<Widget> listItems = [];
+    return BaseView<FamilyModel>(
+      builder: (BuildContext context, FamilyModel model, _) {
+        Widget appBar = SliverPersistentHeader(
+          delegate: FamilySliverAppBar(
+            expandedHeight: 200,
+            familyCard: familyCard,
+          ),
+          floating: true,
+        );
 
-    Widget appBar = SliverPersistentHeader(
-      delegate: FamilySliverAppBar(
-        expandedHeight: 200,
-        familyCard: familyCard,
-      ),
-      pinned: true,
-    );
+        Widget priceTile = SliverPadding(
+          padding: EdgeInsets.symmetric(vertical: 24.0),
+          sliver: SliverToBoxAdapter(
+            child: FamilyPaymentInfoWidget(
+              price: family.price,
+              subscriptionType: family.subscriptionType,
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
+          ),
+        );
 
-    Widget priceTile = SliverToBoxAdapter(
-      child: Container(
-        padding: EdgeInsets.all(32.0),
-        child: FamilyPaymentInfoWidget(
-          price: family.price,
-          subscriptionType: family.subscriptionType,
-          mainAxisAlignment: MainAxisAlignment.center,
-        ),
-      ),
-    );
+        Widget membersList = SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              Member member = model.members.elementAt(index);
+              return Container(
+                child: MemberTileWidget(member: member),
+                margin: EdgeInsets.only(top: index <= 0 ? 0.0 : 24.0),
+              );
+            },
+            childCount: model.members.length,
+          ),
+        );
 
-    Widget noMembersPlaceholder = Container(
-      padding: EdgeInsets.symmetric(vertical: 48.0),
-      alignment: Alignment.center,
-      child: SvgPicture.asset(
-        Assets.generalNotFound,
-        semanticsLabel: 'No members added yet',
-        width: 190.0,
-        height: 130.0,
-      ),
-    );
+        Future<void> showMemberBuilderForResults() async {
+          final builderArguments = MemberBuildData(
+            memberFamilySubscription: family.subscriptionType,
+          );
 
-    Widget contentList = SliverList(
-      delegate: SliverChildListDelegate(listItems),
-    );
+          var data = await Navigator.pushNamed(
+            context,
+            Paths.memberBuilder,
+            arguments: builderArguments,
+          );
 
-    Widget floatingActionButton = Positioned(
-      bottom: 16.0,
-      left: 16.0,
-      right: 16.0,
-      child: Container(
-        alignment: Alignment.bottomCenter,
-        margin: EdgeInsets.only(bottom: 32.0),
-        child: FloatingActionButton.extended(
-          label: const Text("ADD NEW MEMBER"),
-          foregroundColor: AppColors.textPrimary,
-          backgroundColor: AppColors.primaryAccent,
-          onPressed: () {},
-        ),
-      ),
-    );
+          final member = data as BuildData<Member>;
 
-    return SafeArea(
-      child: Material(
-        color: AppColors.background,
-        child: Stack(
-          children: <Widget>[
-            CustomScrollView(
-              slivers: <Widget>[
-                appBar,
-                priceTile,
-                contentList,
+          if (member == null) return;
+
+          if (member.response == BuildResponses.success) {
+            bool error = !await model.addNewMember(
+              user.id,
+              member.product,
+              family.id,
+            );
+            if (error) print('FamilyView: Error while adding new member.');
+          } else {
+            print('FamilyView: Member response was not successfull.');
+          }
+        }
+
+        Widget floatingActionButton = Positioned(
+          bottom: 16.0,
+          left: 16.0,
+          right: 16.0,
+          child: Container(
+            alignment: Alignment.bottomCenter,
+            margin: EdgeInsets.only(bottom: 32.0),
+            child: FloatingActionButton.extended(
+              label: const Text("ADD NEW MEMBER"),
+              foregroundColor: AppColors.textPrimary,
+              backgroundColor: AppColors.primaryAccent,
+              onPressed: showMemberBuilderForResults,
+            ),
+          ),
+        );
+
+        return SafeArea(
+          child: Material(
+            color: AppColors.background,
+            child: Stack(
+              children: <Widget>[
+                CustomScrollView(
+                  slivers: <Widget>[
+                    appBar,
+                    priceTile,
+                    if (model.members.isNotEmpty) membersList,
+                  ],
+                ),
+                floatingActionButton,
               ],
             ),
-            floatingActionButton,
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

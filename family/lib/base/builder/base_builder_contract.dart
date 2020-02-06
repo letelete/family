@@ -1,4 +1,4 @@
-import 'package:family/core/models/build_data.dart';
+import 'package:family/core/models/build_data/build_data.dart';
 import 'package:flutter/material.dart';
 
 /// Describes all requirements of creating [BaseBuilderView].
