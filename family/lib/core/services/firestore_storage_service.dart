@@ -38,13 +38,20 @@ class FirestoreStorageService implements StorageService {
   MemberSerializer _memberSerializer = locator<MemberSerializer>();
 
   @override
-  Future<bool> addFamilyMember(String familyId, Member member) async {
+  Future<bool> addUserFamilyMember(
+      String userId, String familyId, Member member) async {
     final Map memberData = member.toJson();
+    final String path = _Path.generate([
+      _Path.users,
+      userId,
+      _Path.families,
+      familyId,
+      _Path.members,
+      member.id
+    ]);
     bool success = false;
     await _firestore
-        .document(familyId)
-        .collection(_Path.families)
-        .document(member.id)
+        .document(path)
         .setData(memberData)
         .then((_) => success = true)
         .catchError(print);
@@ -54,12 +61,12 @@ class FirestoreStorageService implements StorageService {
   @override
   Future<bool> addUserFamily(String userId, Family family) async {
     final Map familyData = family.toJson();
-    final String docPath =
+    final String path =
         _Path.generate([_Path.users, userId, _Path.families, family.id]);
-    print(docPath);
+    print(path);
     bool success = false;
     await _firestore
-        .document(docPath)
+        .document(path)
         .setData(familyData)
         .then((_) => success = true)
         .catchError(print);
@@ -76,28 +83,28 @@ class FirestoreStorageService implements StorageService {
   }
 
   @override
-  Future<List<Member>> getFamilyMembers(String familyId) async {
+  Future<List<Member>> getUserFamilyMembers(
+      String userId, String familyId) async {
+    final String path = _Path.generate(
+        [_Path.users, userId, _Path.families, familyId, _Path.members]);
     List<Member> members;
     await _firestore
-        .document(familyId)
-        .collection(_Path.families)
+        .collection(path)
         .getDocuments()
         .then((QuerySnapshot query) {
-      members = [
-        for (DocumentSnapshot doc in query.documents)
-          _memberSerializer.convert(doc.data)
-      ];
+      members = query.documents
+          .map((DocumentSnapshot doc) => _memberSerializer.convert(doc.data))
+          .toList();
     }).catchError(print);
     return members;
   }
 
   @override
   Future<List<Family>> getUserFamilies(String userId) async {
-    final String docPath =
-        _Path.generate([_Path.users, userId, _Path.families]);
+    final String path = _Path.generate([_Path.users, userId, _Path.families]);
     List<Family> families;
     await _firestore
-        .collection(docPath)
+        .collection(path)
         .getDocuments()
         .then((QuerySnapshot query) {
       families = [

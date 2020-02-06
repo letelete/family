@@ -31,6 +31,7 @@ class FamilyView extends StatelessWidget {
     final FamilyCard familyCard = FamilyCard.fromFamily(family);
 
     return BaseView<FamilyModel>(
+      onModelReady: (model) => model.fetchMembers(user.id, family.id),
       builder: (BuildContext context, FamilyModel model, _) {
         Widget appBar = SliverPersistentHeader(
           delegate: FamilySliverAppBar(
