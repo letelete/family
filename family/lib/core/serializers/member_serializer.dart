@@ -13,6 +13,7 @@ class MemberSerializer extends Converter<Map, Member> {
   static const paidKey = 'paid';
   static const photoUrlKey = 'photo_url';
   static const subscriptionKey = 'subscription';
+  static const createdAtKey = 'createdAt';
 
   DateTimeSerializer _dateTimeSerializer = locator<DateTimeSerializer>();
   SubscriptionSerializer _subscriptionSerializer =
@@ -28,16 +29,10 @@ class MemberSerializer extends Converter<Map, Member> {
     final String photoUrl = member[photoUrlKey];
     final Subscription subscription =
         _subscriptionSerializer.convert(member[subscriptionKey]);
+    final DateTime createdAt =
+        _dateTimeSerializer.convert(member[createdAtKey]);
 
     Member memberObject;
-
-    if (id == null ||
-        name == null ||
-        nextPayment == null ||
-        paid == null ||
-        subscription == null) {
-      return null;
-    }
 
     try {
       memberObject = Member(
@@ -47,6 +42,7 @@ class MemberSerializer extends Converter<Map, Member> {
         paid: paid,
         photoUrl: photoUrl,
         subscription: subscription,
+        createdAt: createdAt,
       );
     } catch (e) {
       print('MemberSerializer: Error building a member. ${e.toString()}');
@@ -65,6 +61,7 @@ extension MemberToJson on Member {
       MemberSerializer.paidKey: this.paid.toString(),
       MemberSerializer.photoUrlKey: this.photoUrl,
       MemberSerializer.subscriptionKey: this.subscription.toJson(),
+      MemberSerializer.createdAtKey: this.createdAt.toJson(),
     };
   }
 }

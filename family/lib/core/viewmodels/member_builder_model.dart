@@ -90,6 +90,7 @@ class MemberBuilderModel extends BaseModel {
     final DateTime nextPaymentDay = _memberNextPayment ?? member?.nextPayment;
     final Subscription subscription =
         _memberSubscription ?? member?.subscription;
+    final DateTime createdAt = DateTime.now();
 
     if (id == null ||
         name == null ||
@@ -106,6 +107,7 @@ class MemberBuilderModel extends BaseModel {
       photoUrl: photoUrl,
       nextPayment: nextPaymentDay,
       subscription: subscription,
+      createdAt: createdAt,
     );
 
     this._buildData = BuildData<Member>(

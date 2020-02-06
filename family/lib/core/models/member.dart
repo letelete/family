@@ -8,6 +8,7 @@ class Member {
   final bool paid;
   final DateTime nextPayment;
   final Subscription subscription;
+  final DateTime createdAt;
 
   const Member({
     this.id,
@@ -16,11 +17,13 @@ class Member {
     this.paid,
     this.nextPayment,
     this.subscription,
+    this.createdAt,
   })  : assert(id != null && id != ''),
         assert(name != null && name != ''),
         assert(paid != null),
         assert(nextPayment != null),
-        assert(subscription != null);
+        assert(subscription != null),
+        assert(createdAt != null);
 
   static String generateId() => Uuid().v1();
 }
