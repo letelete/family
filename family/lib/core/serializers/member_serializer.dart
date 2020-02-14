@@ -13,7 +13,7 @@ class MemberSerializer extends Converter<Map, Member> {
   static const paidKey = 'paid';
   static const photoUrlKey = 'photo_url';
   static const subscriptionKey = 'subscription';
-  static const createdAtKey = 'createdAt';
+  static const createdAtKey = 'created_at';
 
   DateTimeSerializer _dateTimeSerializer = locator<DateTimeSerializer>();
   SubscriptionSerializer _subscriptionSerializer =
