@@ -13,12 +13,11 @@ import 'package:family/ui/view/home_view.dart';
 const String _noRoutePath = '404';
 
 class Paths {
-  static const String baseRoutePath = 'login';
   static const String loginView = 'login';
-  static const String homeView = '/';
-  static const String familyView = 'family';
-  static const String familyBuilder = 'familyBuilder';
-  static const String memberBuilder = 'memberBuilder';
+  static const String homeView = 'home';
+  static const String familyView = '$homeView/family';
+  static const String familyBuilder = '$homeView/familyBuilder';
+  static const String memberBuilder = '$familyView/memberBuilder';
 }
 
 Map<String, PageRoute> _routes(RouteSettings settings) {

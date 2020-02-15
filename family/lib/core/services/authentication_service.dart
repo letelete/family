@@ -11,17 +11,14 @@ class AuthenticationService {
 
   Future<bool> login() async {
     final User fetchedUser = await _api.getUserProfile();
-
-    bool success = fetchedUser != null;
-    if (success) {
-      userController.add(fetchedUser);
-    }
-
+    final bool success = fetchedUser != null;
+    if (success) userController.add(fetchedUser);
     return success;
   }
 
   Future<bool> logout() async {
-    bool success = await _api.logOutUser();
+    final bool success = await _api.logOutUser();
+    if (success) userController.add(null);
     return success;
   }
 }

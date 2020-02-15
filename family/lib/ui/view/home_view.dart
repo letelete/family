@@ -22,9 +22,10 @@ import 'package:provider/provider.dart';
 class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<User>(context);
-    final FloatingActionButtonLocation floatingActionButtonLocation =
+    const FloatingActionButtonLocation floatingActionButtonLocation =
         FloatingActionButtonLocation.centerFloat;
+
+    final User user = Provider.of<User>(context);
     final double parentWidth = MediaQuery.of(context).size.width;
 
     return BaseView<HomeModel>(
@@ -35,17 +36,7 @@ class HomeView extends StatelessWidget {
       builder: (context, model, child) {
         Widget logoutMenuTile = MenuTile(
           title: 'Logout',
-          onTap: () async {
-            bool sucess = await model.logout();
-            if (sucess) {
-              return Navigator.pushNamedAndRemoveUntil(
-                context,
-                Paths.loginView,
-                (Route<dynamic> route) => false,
-              );
-            }
-            return null;
-          },
+          onTap: () => _logout(context, model),
         );
 
         Widget cancelMenuTile = MenuTile(
@@ -183,6 +174,15 @@ class HomeView extends StatelessWidget {
       if (error) print('Error adding new family: ${family.toString()}');
     } else {
       print('BuildData has unsuccessful response: ${buildData.toString()}');
+    }
+  }
+
+  Future<void> _logout(BuildContext context, HomeModel model) async {
+    bool sucess = await model.logout();
+    if (sucess) {
+      print('Successfully logged-out :)');
+    } else {
+      print('Error logging-out from the app');
     }
   }
 }
