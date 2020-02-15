@@ -9,9 +9,7 @@ class LoginModel extends BaseModel {
 
   Future<bool> login() async {
     setState(ViewState.busy);
-    print('Logging in...');
     bool success = await _authenticationService.login();
-
     setState(ViewState.idle);
     return success;
   }

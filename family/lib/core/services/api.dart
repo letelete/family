@@ -15,19 +15,18 @@ class Api {
   /// Returns @nullable [User] at the end. If null, user could not be fetched.
   Future<User> getUserProfile() async {
     FirebaseUser firebaseUser = await _firebaseAuth.currentUser();
-
     if (firebaseUser != null) {
       return User.fromFirebaseUser(firebaseUser);
     }
 
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.getCredential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-
     firebaseUser = (await _firebaseAuth.signInWithCredential(credential)).user;
     if (firebaseUser != null) {
       return User.fromFirebaseUser(firebaseUser);
