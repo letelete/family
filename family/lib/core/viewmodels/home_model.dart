@@ -21,10 +21,8 @@ class HomeModel extends BaseModel {
     return _storageService.streamUserFamilies(userId);
   }
 
-  bool fetchTodayDate() {
+  Future<void> fetchTodayDate() async {
     this._todayHumanDate = Time.now().toHuman();
-    bool success = _todayHumanDate != null;
-    return success;
   }
 
   Future<bool> logout() async {

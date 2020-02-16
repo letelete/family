@@ -29,32 +29,26 @@ class HomeView extends StatelessWidget {
     final double parentWidth = MediaQuery.of(context).size.width;
 
     return BaseView<HomeModel>(
-      onModelReady: (model) {
-        model.fetchTodayDate();
-      },
+      onModelReady: (model) => model.fetchTodayDate(),
       builder: (context, model, child) {
         return StreamProvider<List<Family>>.value(
+          initialData: const <Family>[],
           value: model.streamFamilies(user.id),
           child: Consumer<List<Family>>(
             builder: (BuildContext context, List<Family> families, _) {
-              final List<Family> families = Provider.of<List<Family>>(context);
-
-              Widget logoutMenuTile = MenuTile(
+              final logoutMenuTile = MenuTile(
                 title: 'Logout',
-                onTap: () => _logout(context, model),
+                onTap: model.logout,
               );
 
-              Widget cancelMenuTile = MenuTile(
+              final cancelMenuTile = MenuTile(
                 title: 'Cancel',
                 onTap: () => Navigator.pop(context),
               );
 
-              List<MenuTile> menuTiles = <MenuTile>[
-                logoutMenuTile,
-                cancelMenuTile,
-              ];
+              final List<MenuTile> menuTiles = [logoutMenuTile, cancelMenuTile];
 
-              Widget appBar = AppBar(
+              final appBar = AppBar(
                 automaticallyImplyLeading: false,
                 backgroundColor: AppColors.background,
                 title: AppBarTitle(title: 'My families'),
@@ -62,11 +56,7 @@ class HomeView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 16.0),
                     child: UserAvatarWidget(
-                      onTap: () {
-                        return Navigator.of(context).push(
-                          MenuRouteView(children: menuTiles),
-                        );
-                      },
+                      onTap: () => _showMenu(context, menuTiles),
                       name: user.name,
                       photoUrl: user.photoUrl,
                       size: 40.0,
@@ -75,21 +65,19 @@ class HomeView extends StatelessWidget {
                 ],
               );
 
-              Widget floatingActionButton = Container(
+              final floatingActionButton = Container(
                 alignment: Alignment.bottomCenter,
                 margin: EdgeInsets.only(bottom: 32.0),
                 child: FloatingActionButton.extended(
                   label: const Text("ADD NEW FAMILY"),
                   foregroundColor: AppColors.textPrimary,
                   backgroundColor: AppColors.primaryAccent,
-                  onPressed: () {
-                    return _showFamilyBuilderForResults(
-                        context, model, user.id);
-                  },
+                  onPressed: () =>
+                      _showFamilyBuilderForResults(context, model, user.id),
                 ),
               );
 
-              Widget progressIndicator = Visibility(
+              final progressIndicator = Visibility(
                 visible: model.viewState == ViewState.busy,
                 child: LinearProgressIndicator(
                   backgroundColor: Colors.black,
@@ -97,7 +85,7 @@ class HomeView extends StatelessWidget {
                 ),
               );
 
-              Widget dayOfMonthBar = Container(
+              final dayOfMonthBar = Container(
                 width: parentWidth,
                 color: AppColors.homeTodayDateBackground,
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -112,7 +100,7 @@ class HomeView extends StatelessWidget {
                 ),
               );
 
-              Widget familyList = ListView.builder(
+              final familyList = ListView.builder(
                 itemCount: families.length,
                 itemBuilder: (BuildContext context, int position) {
                   final Family family = families.elementAt(position);
@@ -126,7 +114,7 @@ class HomeView extends StatelessWidget {
                 },
               );
 
-              Widget familyListPlaceholder = Container(
+              final familyListPlaceholder = Container(
                 alignment: Alignment.center,
                 child: SvgPicture.asset(
                   Assets.generalNotFound,
@@ -148,10 +136,14 @@ class HomeView extends StatelessWidget {
                     dayOfMonthBar,
                     SizedBox(height: 8.0),
                     Expanded(
-                      child:
-                          model.viewState == ViewState.idle && families.isEmpty
-                              ? familyListPlaceholder
-                              : familyList,
+                      flex: 1,
+                      child: RefreshIndicator(
+                        onRefresh: () => model.fetchTodayDate(),
+                        child: model.viewState == ViewState.idle &&
+                                families.isEmpty
+                            ? familyListPlaceholder
+                            : familyList,
+                      ),
                     ),
                   ],
                 ),
@@ -168,30 +160,22 @@ class HomeView extends StatelessWidget {
     HomeModel model,
     String userId,
   ) async {
-    final data = await Navigator.pushNamed(
+    final buildData = await Navigator.pushNamed(
       context,
       Paths.familyBuilder,
-    );
-    BuildData<Family> buildData = data as BuildData<Family>;
-    bool noNeedToUpdateView =
-        buildData == null || buildData.response == BuildResponses.cancel;
-    if (noNeedToUpdateView) return;
-
-    Family family = buildData.product;
-    if (buildData.response == BuildResponses.success) {
-      bool error = !await model.addNewFamily(userId, family);
-      if (error) print('Error adding new family: ${family.toString()}');
-    } else {
-      print('BuildData has unsuccessful response: ${buildData.toString()}');
+    ) as BuildData<Family>;
+    final BuildResponses response = buildData.response;
+    final Family family = buildData.product;
+    if (response == BuildResponses.success) {
+      await model.addNewFamily(userId, family);
+    } else if (response == BuildResponses.error) {
+      // TODO: Show error modal
     }
   }
 
-  Future<void> _logout(BuildContext context, HomeModel model) async {
-    bool sucess = await model.logout();
-    if (sucess) {
-      print('Successfully logged-out :)');
-    } else {
-      print('Error logging-out from the app');
-    }
+  Future<void> _showMenu(BuildContext context, List<MenuTile> children) async {
+    return await Navigator.of(context).push(
+      MenuRouteView(children: children),
+    );
   }
 }
