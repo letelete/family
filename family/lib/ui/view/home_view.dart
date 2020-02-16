@@ -30,124 +30,133 @@ class HomeView extends StatelessWidget {
 
     return BaseView<HomeModel>(
       onModelReady: (model) {
-        model.fetchFamilies(user.id);
         model.fetchTodayDate();
       },
       builder: (context, model, child) {
-        Widget logoutMenuTile = MenuTile(
-          title: 'Logout',
-          onTap: () => _logout(context, model),
-        );
+        return StreamProvider<List<Family>>.value(
+          value: model.streamFamilies(user.id),
+          child: Consumer<List<Family>>(
+            builder: (BuildContext context, List<Family> families, _) {
+              final List<Family> families = Provider.of<List<Family>>(context);
 
-        Widget cancelMenuTile = MenuTile(
-          title: 'Cancel',
-          onTap: () => Navigator.pop(context),
-        );
+              Widget logoutMenuTile = MenuTile(
+                title: 'Logout',
+                onTap: () => _logout(context, model),
+              );
 
-        List<MenuTile> menuTiles = <MenuTile>[
-          logoutMenuTile,
-          cancelMenuTile,
-        ];
+              Widget cancelMenuTile = MenuTile(
+                title: 'Cancel',
+                onTap: () => Navigator.pop(context),
+              );
 
-        Widget appBar = AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: AppColors.background,
-          title: AppBarTitle(title: 'My families'),
-          actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 16.0),
-              child: UserAvatarWidget(
-                onTap: () {
-                  return Navigator.of(context).push(
-                    MenuRouteView(children: menuTiles),
+              List<MenuTile> menuTiles = <MenuTile>[
+                logoutMenuTile,
+                cancelMenuTile,
+              ];
+
+              Widget appBar = AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: AppColors.background,
+                title: AppBarTitle(title: 'My families'),
+                actions: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: UserAvatarWidget(
+                      onTap: () {
+                        return Navigator.of(context).push(
+                          MenuRouteView(children: menuTiles),
+                        );
+                      },
+                      name: user.name,
+                      photoUrl: user.photoUrl,
+                      size: 40.0,
+                    ),
+                  ),
+                ],
+              );
+
+              Widget floatingActionButton = Container(
+                alignment: Alignment.bottomCenter,
+                margin: EdgeInsets.only(bottom: 32.0),
+                child: FloatingActionButton.extended(
+                  label: const Text("ADD NEW FAMILY"),
+                  foregroundColor: AppColors.textPrimary,
+                  backgroundColor: AppColors.primaryAccent,
+                  onPressed: () {
+                    return _showFamilyBuilderForResults(
+                        context, model, user.id);
+                  },
+                ),
+              );
+
+              Widget progressIndicator = Visibility(
+                visible: model.viewState == ViewState.busy,
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.black,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                ),
+              );
+
+              Widget dayOfMonthBar = Container(
+                width: parentWidth,
+                color: AppColors.homeTodayDateBackground,
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(
+                  'Today is ${model.todayHumanDate}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Raleway',
+                    color: AppColors.textSecondary,
+                    fontSize: TextSizes.appBarSubtitle,
+                  ),
+                ),
+              );
+
+              Widget familyList = ListView.builder(
+                itemCount: families.length,
+                itemBuilder: (BuildContext context, int position) {
+                  final Family family = families.elementAt(position);
+                  return FamilyCardWidget(
+                    familyCard: FamilyCard.fromFamily(family),
+                    onTap: (Family family) => Navigator.of(context).pushNamed(
+                      Paths.familyView,
+                      arguments: family,
+                    ),
                   );
                 },
-                name: user.name,
-                photoUrl: user.photoUrl,
-                size: 40.0,
-              ),
-            ),
-          ],
-        );
+              );
 
-        Widget floatingActionButton = Container(
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(bottom: 32.0),
-          child: FloatingActionButton.extended(
-            label: const Text("ADD NEW FAMILY"),
-            foregroundColor: AppColors.textPrimary,
-            backgroundColor: AppColors.primaryAccent,
-            onPressed: () {
-              return _showFamilyBuilderForResults(context, model, user.id);
+              Widget familyListPlaceholder = Container(
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  Assets.generalNotFound,
+                  semanticsLabel: 'No families added yet',
+                  width: 190.0,
+                  height: 130.0,
+                ),
+              );
+
+              return Scaffold(
+                backgroundColor: AppColors.background,
+                floatingActionButton: floatingActionButton,
+                floatingActionButtonLocation: floatingActionButtonLocation,
+                appBar: appBar,
+                body: Column(
+                  children: <Widget>[
+                    progressIndicator,
+                    SizedBox(height: 8.0),
+                    dayOfMonthBar,
+                    SizedBox(height: 8.0),
+                    Expanded(
+                      child:
+                          model.viewState == ViewState.idle && families.isEmpty
+                              ? familyListPlaceholder
+                              : familyList,
+                    ),
+                  ],
+                ),
+              );
             },
-          ),
-        );
-
-        Widget progressIndicator = Visibility(
-          visible: model.viewState == ViewState.busy,
-          child: LinearProgressIndicator(
-            backgroundColor: Colors.black,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-          ),
-        );
-
-        Widget dayOfMonthBar = Container(
-          width: parentWidth,
-          color: AppColors.homeTodayDateBackground,
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Text(
-            'Today is ${model.todayHumanDate}',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Raleway',
-              color: AppColors.textSecondary,
-              fontSize: TextSizes.appBarSubtitle,
-            ),
-          ),
-        );
-
-        Widget familyList = ListView.builder(
-          itemCount: model.families.length,
-          itemBuilder: (BuildContext context, int position) {
-            final FamilyCard familyCard = model.families.elementAt(position);
-            return FamilyCardWidget(
-              familyCard: familyCard,
-              onTap: (Family family) => Navigator.of(context).pushNamed(
-                Paths.familyView,
-                arguments: family,
-              ),
-            );
-          },
-        );
-
-        Widget familyListPlaceholder = Container(
-          alignment: Alignment.center,
-          child: SvgPicture.asset(
-            Assets.generalNotFound,
-            semanticsLabel: 'No families added yet',
-            width: 190.0,
-            height: 130.0,
-          ),
-        );
-
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          floatingActionButton: floatingActionButton,
-          floatingActionButtonLocation: floatingActionButtonLocation,
-          appBar: appBar,
-          body: Column(
-            children: <Widget>[
-              progressIndicator,
-              SizedBox(height: 8.0),
-              dayOfMonthBar,
-              SizedBox(height: 8.0),
-              Expanded(
-                child:
-                    model.viewState == ViewState.idle && model.families.isEmpty
-                        ? familyListPlaceholder
-                        : familyList,
-              ),
-            ],
           ),
         );
       },

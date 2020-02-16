@@ -10,7 +10,7 @@ abstract class StorageService {
 
   Future<List<Member>> getUserFamilyMembers(String userId, String familyId);
 
-  Future<List<Family>> getUserFamilies(String userId);
+  Stream<List<Family>> streamUserFamilies(String userId);
   
   Future<Family> getFamily(String familyId);
 }
