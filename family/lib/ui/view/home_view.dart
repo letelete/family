@@ -10,7 +10,7 @@ import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
-import 'package:family/ui/view/menu_view.dart';
+import 'package:family/ui/view/menu_view/views_implementation/user_menu.dart';
 import 'package:family/ui/widgets/app_bar_title_widget.dart';
 import 'package:family/ui/widgets/family_card_widget.dart';
 import 'package:family/ui/widgets/user_avatar_widget.dart';
@@ -27,6 +27,7 @@ class HomeView extends StatelessWidget {
 
     final User user = Provider.of<User>(context);
     final double parentWidth = MediaQuery.of(context).size.width;
+    final UserMenu userMenu = UserMenu(context);
 
     return BaseView<HomeModel>(
       onModelReady: (model) => model.fetchTodayDate(),
@@ -36,18 +37,6 @@ class HomeView extends StatelessWidget {
           value: model.streamFamilies(user.id),
           child: Consumer<List<Family>>(
             builder: (BuildContext context, List<Family> families, _) {
-              final logoutMenuTile = MenuTile(
-                title: 'Logout',
-                onTap: model.logout,
-              );
-
-              final cancelMenuTile = MenuTile(
-                title: 'Cancel',
-                onTap: () => Navigator.pop(context),
-              );
-
-              final List<MenuTile> menuTiles = [logoutMenuTile, cancelMenuTile];
-
               final appBar = AppBar(
                 automaticallyImplyLeading: false,
                 backgroundColor: AppColors.background,
@@ -56,7 +45,7 @@ class HomeView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 16.0),
                     child: UserAvatarWidget(
-                      onTap: () => _showMenu(context, menuTiles),
+                      onTap: () => userMenu.show(context),
                       name: user.name,
                       photoUrl: user.photoUrl,
                       size: 40.0,
@@ -171,11 +160,5 @@ class HomeView extends StatelessWidget {
     } else if (response == BuildResponses.error) {
       // TODO: Show error modal
     }
-  }
-
-  Future<void> _showMenu(BuildContext context, List<MenuTile> children) async {
-    return await Navigator.of(context).push(
-      MenuRouteView(children: children),
-    );
   }
 }
