@@ -4,9 +4,7 @@ import 'package:family/ui/view/menu_view/views_implementation/base_menu.dart';
 import 'package:flutter/material.dart';
 
 class UserMenu extends Menu<UserMenuModel> {
-  final BuildContext context;
-
-  UserMenu(this.context);
+  UserMenu(BuildContext context) : super(context);
 
   @override
   List<MenuTile> getChildren(UserMenuModel model) {
@@ -15,14 +13,6 @@ class UserMenu extends Menu<UserMenuModel> {
       onTap: model.logout,
     );
 
-    final cancelMenuTile = MenuTile(
-      title: 'Cancel',
-      onTap: () => Navigator.pop(context),
-    );
-
-    return <MenuTile>[
-      logoutMenuTile,
-      cancelMenuTile,
-    ];
+    return <MenuTile>[logoutMenuTile];
   }
 }

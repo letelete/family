@@ -6,11 +6,22 @@ import 'package:flutter/cupertino.dart';
 
 abstract class Menu<T extends BaseModel> {
   final T model = locator<T>();
+  final BuildContext context;
+
+  Menu(this.context);
 
   List<MenuTile> getChildren(T model);
 
-  Future<void> show(BuildContext context) async {
-    final children = getChildren(model);
+  Future<void> show() async {
+    List<MenuTile> children = getChildren(model);
+    children.add(_cancelMenuTile());
     await Navigator.of(context).push(MenuRouteView(children));
   }
+
+  MenuTile _cancelMenuTile() => MenuTile(
+        title: 'Cancel',
+        onTap: _dismiss,
+      );
+
+  void _dismiss() => Navigator.of(context).pop();
 }

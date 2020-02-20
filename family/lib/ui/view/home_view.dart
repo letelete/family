@@ -45,7 +45,7 @@ class HomeView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 16.0),
                     child: UserAvatarWidget(
-                      onTap: () => userMenu.show(context),
+                      onTap: () => userMenu.show(),
                       name: user.name,
                       photoUrl: user.photoUrl,
                       size: 40.0,
