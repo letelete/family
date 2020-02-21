@@ -10,7 +10,8 @@ import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
-import 'package:family/ui/view/menu_view.dart';
+import 'package:family/ui/view/menu_view/views_implementation/family_menu.dart';
+import 'package:family/ui/view/menu_view/views_implementation/user_menu.dart';
 import 'package:family/ui/widgets/app_bar_title_widget.dart';
 import 'package:family/ui/widgets/family_card_widget.dart';
 import 'package:family/ui/widgets/user_avatar_widget.dart';
@@ -27,127 +28,120 @@ class HomeView extends StatelessWidget {
 
     final User user = Provider.of<User>(context);
     final double parentWidth = MediaQuery.of(context).size.width;
-
     return BaseView<HomeModel>(
-      onModelReady: (model) {
-        model.fetchFamilies(user.id);
-        model.fetchTodayDate();
-      },
+      onModelReady: (model) => model.fetchTodayDate(),
       builder: (context, model, child) {
-        Widget logoutMenuTile = MenuTile(
-          title: 'Logout',
-          onTap: () => _logout(context, model),
-        );
+        return StreamProvider<List<Family>>.value(
+          initialData: const <Family>[],
+          value: model.streamFamilies(user.id),
+          child: Consumer<List<Family>>(
+            builder: (BuildContext context, List<Family> families, _) {
+              final appBar = AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: AppColors.background,
+                title: AppBarTitle(title: 'My families'),
+                actions: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(right: 16.0),
+                    child: UserAvatarWidget(
+                      onTap: () => UserMenu(context).show(),
+                      name: user.name,
+                      photoUrl: user.photoUrl,
+                      size: 40.0,
+                    ),
+                  ),
+                ],
+              );
 
-        Widget cancelMenuTile = MenuTile(
-          title: 'Cancel',
-          onTap: () => Navigator.pop(context),
-        );
+              final floatingActionButton = Container(
+                alignment: Alignment.bottomCenter,
+                margin: EdgeInsets.only(bottom: 32.0),
+                child: FloatingActionButton.extended(
+                  label: const Text("ADD NEW FAMILY"),
+                  foregroundColor: AppColors.textPrimary,
+                  backgroundColor: AppColors.primaryAccent,
+                  onPressed: () =>
+                      _showFamilyBuilderForResults(context, model, user.id),
+                ),
+              );
 
-        List<MenuTile> menuTiles = <MenuTile>[
-          logoutMenuTile,
-          cancelMenuTile,
-        ];
+              final progressIndicator = Visibility(
+                visible: model.viewState == ViewState.busy,
+                child: LinearProgressIndicator(
+                  backgroundColor: Colors.black,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                ),
+              );
 
-        Widget appBar = AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: AppColors.background,
-          title: AppBarTitle(title: 'My families'),
-          actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 16.0),
-              child: UserAvatarWidget(
-                onTap: () {
-                  return Navigator.of(context).push(
-                    MenuRouteView(children: menuTiles),
+              final dayOfMonthBar = Container(
+                width: parentWidth,
+                color: AppColors.homeTodayDateBackground,
+                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Text(
+                  'Today is ${model.todayHumanDate}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Raleway',
+                    color: AppColors.textSecondary,
+                    fontSize: TextSizes.appBarSubtitle,
+                  ),
+                ),
+              );
+
+              final familyList = ListView.builder(
+                itemCount: families.length,
+                itemBuilder: (BuildContext context, int position) {
+                  final Family family = families.elementAt(position);
+                  return FamilyCardWidget(
+                    familyCard: FamilyCard.fromFamily(family),
+                    onTap: (Family family) {
+                      return Navigator.of(context).pushNamed(
+                        Paths.familyView,
+                        arguments: family,
+                      );
+                    },
+                    onLongPress: (Family family) {
+                      return FamilyMenu(context, family).show();
+                    },
                   );
                 },
-                name: user.name,
-                photoUrl: user.photoUrl,
-                size: 40.0,
-              ),
-            ),
-          ],
-        );
+              );
 
-        Widget floatingActionButton = Container(
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.only(bottom: 32.0),
-          child: FloatingActionButton.extended(
-            label: const Text("ADD NEW FAMILY"),
-            foregroundColor: AppColors.textPrimary,
-            backgroundColor: AppColors.primaryAccent,
-            onPressed: () {
-              return _showFamilyBuilderForResults(context, model, user.id);
+              final familyListPlaceholder = Container(
+                alignment: Alignment.center,
+                child: SvgPicture.asset(
+                  Assets.generalNotFound,
+                  semanticsLabel: 'No families added yet',
+                  width: 190.0,
+                  height: 130.0,
+                ),
+              );
+
+              return Scaffold(
+                backgroundColor: AppColors.background,
+                floatingActionButton: floatingActionButton,
+                floatingActionButtonLocation: floatingActionButtonLocation,
+                appBar: appBar,
+                body: Column(
+                  children: <Widget>[
+                    progressIndicator,
+                    SizedBox(height: 8.0),
+                    dayOfMonthBar,
+                    SizedBox(height: 8.0),
+                    Expanded(
+                      flex: 1,
+                      child: RefreshIndicator(
+                        onRefresh: () => model.fetchTodayDate(),
+                        child: model.viewState == ViewState.idle &&
+                                families.isEmpty
+                            ? familyListPlaceholder
+                            : familyList,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             },
-          ),
-        );
-
-        Widget progressIndicator = Visibility(
-          visible: model.viewState == ViewState.busy,
-          child: LinearProgressIndicator(
-            backgroundColor: Colors.black,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-          ),
-        );
-
-        Widget dayOfMonthBar = Container(
-          width: parentWidth,
-          color: AppColors.homeTodayDateBackground,
-          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Text(
-            'Today is ${model.todayHumanDate}',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Raleway',
-              color: AppColors.textSecondary,
-              fontSize: TextSizes.appBarSubtitle,
-            ),
-          ),
-        );
-
-        Widget familyList = ListView.builder(
-          itemCount: model.families.length,
-          itemBuilder: (BuildContext context, int position) {
-            final FamilyCard familyCard = model.families.elementAt(position);
-            return FamilyCardWidget(
-              familyCard: familyCard,
-              onTap: (Family family) => Navigator.of(context).pushNamed(
-                Paths.familyView,
-                arguments: family,
-              ),
-            );
-          },
-        );
-
-        Widget familyListPlaceholder = Container(
-          alignment: Alignment.center,
-          child: SvgPicture.asset(
-            Assets.generalNotFound,
-            semanticsLabel: 'No families added yet',
-            width: 190.0,
-            height: 130.0,
-          ),
-        );
-
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          floatingActionButton: floatingActionButton,
-          floatingActionButtonLocation: floatingActionButtonLocation,
-          appBar: appBar,
-          body: Column(
-            children: <Widget>[
-              progressIndicator,
-              SizedBox(height: 8.0),
-              dayOfMonthBar,
-              SizedBox(height: 8.0),
-              Expanded(
-                child:
-                    model.viewState == ViewState.idle && model.families.isEmpty
-                        ? familyListPlaceholder
-                        : familyList,
-              ),
-            ],
           ),
         );
       },
@@ -159,30 +153,16 @@ class HomeView extends StatelessWidget {
     HomeModel model,
     String userId,
   ) async {
-    final data = await Navigator.pushNamed(
+    final buildData = await Navigator.pushNamed(
       context,
       Paths.familyBuilder,
-    );
-    BuildData<Family> buildData = data as BuildData<Family>;
-    bool noNeedToUpdateView =
-        buildData == null || buildData.response == BuildResponses.cancel;
-    if (noNeedToUpdateView) return;
-
-    Family family = buildData.product;
-    if (buildData.response == BuildResponses.success) {
-      bool error = !await model.addNewFamily(userId, family);
-      if (error) print('Error adding new family: ${family.toString()}');
-    } else {
-      print('BuildData has unsuccessful response: ${buildData.toString()}');
-    }
-  }
-
-  Future<void> _logout(BuildContext context, HomeModel model) async {
-    bool sucess = await model.logout();
-    if (sucess) {
-      print('Successfully logged-out :)');
-    } else {
-      print('Error logging-out from the app');
+    ) as BuildData<Family>;
+    final BuildResponses response = buildData.response;
+    final Family family = buildData.product;
+    if (response == BuildResponses.success) {
+      await model.addNewFamily(userId, family);
+    } else if (response == BuildResponses.error) {
+      // TODO: Show error modal
     }
   }
 }

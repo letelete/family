@@ -11,6 +11,9 @@ class AppColors {
   static const Color textPrimary = const Color.fromRGBO(255, 255, 255, 1);
   static const Color textSecondary = const Color.fromRGBO(255, 255, 255, 0.6);
   static const Color textDisabled = const Color.fromRGBO(255, 255, 255, 0.34);
-  
-  static const Color homeTodayDateBackground = const Color.fromRGBO(20,20,20,1);
+
+  static const Color homeTodayDateBackground =
+      const Color.fromRGBO(20, 20, 20, 1);
+
+  static const Color dialogBackground = const Color.fromRGBO(13, 13, 13, 1);
 }

@@ -1,40 +1,12 @@
-import 'package:family/ui/shared/colors.dart';
+import 'package:family/core/models/menu_tile.dart';
 import 'package:family/ui/shared/gradients.dart';
-import 'package:family/ui/shared/sizes.dart';
 import 'package:family/ui/utils/ui_utils.dart';
 import 'package:flutter/material.dart';
-
-class MenuTile extends StatelessWidget {
-  final String title;
-  final GestureTapCallback onTap;
-
-  const MenuTile({
-    Key key,
-    this.title,
-    this.onTap,
-  })  : assert(title != null),
-        assert(onTap != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) => InkWell(
-        onTap: this.onTap,
-        child: Text(
-          this.title,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-            fontSize: TextSizes.menuContent,
-          ),
-        ),
-      );
-}
 
 class MenuRouteView extends ModalRoute<void> {
   final List<MenuTile> children;
 
-  MenuRouteView({this.children})
+  MenuRouteView(this.children)
       : assert(children != null),
         assert(children.length > 0);
 

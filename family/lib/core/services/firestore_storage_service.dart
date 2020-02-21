@@ -100,18 +100,24 @@ class FirestoreStorageService implements StorageService {
   }
 
   @override
-  Future<List<Family>> getUserFamilies(String userId) async {
+  Stream<List<Family>> streamUserFamilies(String userId) {
     final String path = _Path.generate([_Path.users, userId, _Path.families]);
-    List<Family> families;
+    final ref = _firestore.collection(path);
+    return ref.snapshots().map((snapshot) => snapshot.documents
+        .map((doc) => _familySerializer.convert(doc.data))
+        .toList());
+  }
+
+  @override
+  Future<bool> removeUserFamily(String userId, String familyId) async {
+    final String path =
+        _Path.generate([_Path.users, userId, _Path.families, familyId]);
+    bool success = false;
     await _firestore
-        .collection(path)
-        .getDocuments()
-        .then((QuerySnapshot query) {
-      families = [
-        for (DocumentSnapshot doc in query.documents)
-          _familySerializer.convert(doc.data)
-      ];
-    }).catchError(print);
-    return families;
+        .document(path)
+        .delete()
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
   }
 }

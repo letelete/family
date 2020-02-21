@@ -6,53 +6,59 @@ class OverlappingAvatarsWidget extends StatelessWidget {
 
   final List<Widget> avatars;
   final double singleAvatarSize;
-  final double lappingShift;
+
+  final double _avatarOverlapPercentage;
+  final double _totalAvatarSize;
 
   const OverlappingAvatarsWidget({
     Key key,
     this.avatars,
     this.singleAvatarSize,
-  })  : this.lappingShift = singleAvatarSize * 0.2,
-        assert(avatars != null),
+  })  : assert(avatars != null),
         assert(avatars.length > 0),
         assert(singleAvatarSize != null),
+        this._totalAvatarSize = singleAvatarSize + 2 * _avatarBorderSize,
+        this._avatarOverlapPercentage = 0.2,
         super(key: key);
 
   @override
-  Widget build(BuildContext context) => Container(
-        height: singleAvatarSize + 2 * _avatarBorderSize,
-        width: _getWidgetWidth(),
-        child: Stack(children: _getAvatars()),
-      );
+  Widget build(BuildContext context) {
+    final parentWidth = MediaQuery.of(context).size.width;
 
-  double _getWidgetWidth() {
-    double firstAvatar = singleAvatarSize;
-    double allExceptFirst =
-        (avatars.length - 1) * (singleAvatarSize - lappingShift);
-    return firstAvatar + allExceptFirst;
-  }
+    final double shiftDistance =
+        _totalAvatarSize * (1.0 - _avatarOverlapPercentage);
 
-  List<Widget> _getAvatars() {
-    double leftShift = -singleAvatarSize;
-    int iterations = 0;
-    return avatars
-        .map((Widget avatar) {
-          leftShift += singleAvatarSize;
-          leftShift -= iterations * lappingShift;
-          ++iterations;
-          return _getOverlappingAvatar(avatar, leftShift);
+    final double widgetSpace = _totalAvatarSize * avatars.length;
+    final double marginSize = _totalAvatarSize * _avatarOverlapPercentage;
+    final double marginsSpace = marginSize * (avatars.length - 1);
+    final double widgetWidth = widgetSpace - marginsSpace;
+
+    final int avatarsLimit = parentWidth ~/ shiftDistance - 1;
+
+    int index = 0;
+    List<Widget> avatarWidgets = avatars
+        .take(avatarsLimit)
+        .map((avatar) {
+          double nextLeftPosition = shiftDistance * (index++);
+          return _getOverlappingAvatar(avatar, nextLeftPosition);
         })
         .toList()
         .reversed
         .toList();
+
+    return Container(
+      height: _totalAvatarSize,
+      width: widgetWidth,
+      child: Stack(children: avatarWidgets),
+    );
   }
 
   Widget _getOverlappingAvatar(
     Widget avatar,
-    double leftShift,
+    double leftPosition,
   ) =>
       Positioned(
-        left: leftShift,
+        left: leftPosition,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(singleAvatarSize),

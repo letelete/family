@@ -20,3 +20,7 @@ class TextSizes {
   static const double appBarTitle = 24.0;
   static const double appBarSubtitle = 16.0;
 }
+
+class AppSizes {
+  static const double dialogBorderRadius = 20.0;
+}
