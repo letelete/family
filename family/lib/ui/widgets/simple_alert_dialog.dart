@@ -27,7 +27,7 @@ class SimpleAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void close() => Navigator.of(context, rootNavigator: true).pop('dialog');
+    void close() => Navigator.of(context, rootNavigator: true).pop();
 
     Widget dialogButton({Widget child, Function onPressed}) {
       return FlatButton(

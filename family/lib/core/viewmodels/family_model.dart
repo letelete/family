@@ -1,5 +1,7 @@
 import 'package:family/base/base_model.dart';
+import 'package:family/core/enums/build_responses.dart';
 import 'package:family/core/enums/view_state.dart';
+import 'package:family/core/models/builder/build_response.dart';
 import 'package:family/core/models/member.dart';
 import 'package:family/core/services/storage_service.dart';
 import 'package:family/locator.dart';
@@ -22,18 +24,23 @@ class FamilyModel extends BaseModel {
     return data != null;
   }
 
-  Future<bool> addNewMember(
+  Future<void> onMemberBuilderResponse(
     String userId,
-    Member member,
     String familyId,
+    BuilderResponse<Member> response,
   ) async {
     setState(ViewState.busy);
-    bool success = await _storageService.addUserFamilyMember(
-      userId,
-      familyId,
-      member,
-    );
+    if (response == null || response.response == BuildResponse.cancel) {
+      return;
+    }
+    if (response.response == BuildResponse.success) {
+      final member = response.product;
+      await _storageService.addUserFamilyMember(
+        userId,
+        familyId,
+        member,
+      );
+    }
     setState(ViewState.idle);
-    return success;
   }
 }

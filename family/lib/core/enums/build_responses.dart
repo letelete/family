@@ -1,4 +1,4 @@
-enum BuildResponses {
+enum BuildResponse {
   success,
   error,
   cancel,

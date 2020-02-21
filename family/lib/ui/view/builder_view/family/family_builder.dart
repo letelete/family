@@ -1,55 +1,43 @@
 import 'package:family/base/base_view.dart';
-import 'package:family/base/builder/base_builder_view.dart';
-import 'package:family/core/models/build_data/build_data.dart';
+import 'package:family/builder/base_builder_view.dart';
+import 'package:family/builder/builder_contract.dart';
+import 'package:family/core/models/builder/build_data.dart';
+import 'package:family/core/models/builder/builder_page.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/viewmodels/family_builder_model.dart';
-import 'package:family/ui/view/builder_view/family/pages/family_name_page.dart';
-import 'package:family/ui/view/builder_view/family/pages/family_price_page.dart';
-import 'package:family/ui/view/builder_view/family/pages/family_subscription_type_page.dart';
-import 'package:family/ui/view/builder_view/family/pages/famly_payment_day_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class FamilyBuilder extends StatelessWidget {
-  final BuildData<Family> buildData;
+class FamilyBuilder extends StatelessWidget
+    implements BuilderContract<Family, FamilyBuilderModel> {
+  final BuilderInitialData<Family> initialData;
+  final List<BuilderPageData> Function(FamilyBuilderModel model) pages;
+  final String finalStepButtonLabel;
+  final String nextStepButtonLabel;
 
-  const FamilyBuilder({this.buildData});
+  const FamilyBuilder({
+    this.initialData,
+    @required this.pages,
+    this.finalStepButtonLabel = BuilderContract.defaultCreateLabel,
+    this.nextStepButtonLabel = BuilderContract.defaultNextLabel,
+  }) : assert(pages != null);
 
   @override
   Widget build(BuildContext context) {
     return BaseView<FamilyBuilderModel>(
       onModelReady: (model) {
-        if (buildData != null) {
-          model.initializeBuildData(buildData);
+        if (initialData != null) {
+          model.initializeFamily(initialData.product);
         }
       },
       builder: (context, model, _) {
         return BaseBuilderView<Family>(
-          children: <Widget>[
-            FamilyNamePage(model: model),
-            FamilyPricePage(model: model),
-            FamilyPaymentDayPage(model: model),
-            FamilySubscriptionTypePage(model: model),
-          ],
-          titles: const <String>[
-            FamilyNamePage.title,
-            FamilyPricePage.title,
-            FamilyPaymentDayPage.title,
-            FamilySubscriptionTypePage.title,
-          ],
-          nextStepButtonLabel: 'Next',
-          finalStepButtonLabel: 'Create',
-          viewValidated: model.isViewValidated,
-          onViewChange: () {
-            print('view changed');
-            return model.forceValidation(false, alertState: true);
-          },
+          children: pages(model),
+          nextStepButtonLabel: nextStepButtonLabel,
+          finalStepButtonLabel: finalStepButtonLabel,
           onFinishBuild: () {
             model.buildFamilyFromStoredFields();
-            return BuildData<Family>(
-              product: model.family,
-              response: model.buildResponse,
-            );
+            return model.buildResponse;
           },
         );
       },

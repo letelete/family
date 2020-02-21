@@ -2,97 +2,77 @@ import 'package:family/base/base_model.dart';
 import 'package:family/core/enums/build_responses.dart';
 import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/enums/view_state.dart';
-import 'package:family/core/models/build_data/build_data.dart';
+import 'package:family/core/models/builder/build_response.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/member_preview.dart';
 import 'package:family/core/models/price.dart';
 
 class FamilyBuilderModel extends BaseModel {
-  BuildData<Family> _buildData;
+  BuilderResponse<Family> _builderResponse;
+  Family _family;
   Price _price;
   String _name;
   DateTime _paymentDay;
   SubscriptionType _subscriptionType;
-  bool _validated = false;
 
-  Family get family => this._buildData?.product;
+  bool _namePageValidated;
+  bool _pricePageValidated;
+  bool _paymentPageValidated;
+  bool _subscriptionPageValidated;
 
-  BuildResponses get buildResponse => this._buildData?.response;
+  BuilderResponse<Family> get buildResponse => _builderResponse;
+  Family get family => _family;
+  Price get price => _price;
+  String get name => _name;
+  DateTime get paymentDay => _paymentDay;
+  SubscriptionType get subscriptionType => _subscriptionType;
 
-  Price get price => this._price;
+  bool get namePageValidated => _namePageValidated ?? false;
+  bool get pricePageValidated => _pricePageValidated ?? false;
+  bool get paymentPageValidated => _paymentPageValidated ?? false;
+  bool get subscriptionPageValidated => _subscriptionPageValidated ?? false;
 
-  String get name => this._name;
+  void initializeFamily(Family family) => _family = family;
 
-  DateTime get paymentDay => this._paymentDay;
-
-  SubscriptionType get subscriptionType => this._subscriptionType;
-
-  bool get isViewValidated => this._validated;
-
-  void forceValidation(bool validateView, {bool alertState = true}) {
-    if (alertState) setState(ViewState.busy);
-    this._validated = validateView;
-    if (alertState) setState(ViewState.idle);
-  }
-
-  void initializeBuildData(BuildData<Family> buildData) {
-    this._buildData = buildData;
-  }
-
-  void validateNameAndSave(String name) {
-    setState(ViewState.busy);
-
-    this._validated = name != null && name.trim().isNotEmpty;
-    if (this._validated) {
-      this._name = name;
+  void onNameChange(String name) {
+    _namePageValidated = name != null && name.trim().isNotEmpty;
+    if (namePageValidated) {
+      _name = name;
     }
-
     setState(ViewState.idle);
   }
 
-  void validatePriceAndSave(String price, String currency) {
-    setState(ViewState.busy);
-
-    this._validated = price != null &&
+  void onPriceChange(String price, String currency) {
+    _pricePageValidated = price != null &&
         price.trim().isNotEmpty &&
         currency != null &&
         currency.trim().isNotEmpty;
-
-    if (this._validated) {
-      this._price = Price.fromRaw(
+    if (pricePageValidated) {
+      _price = Price.fromRaw(
         priceLine: price,
         currency: currency,
       );
     }
-
     setState(ViewState.idle);
   }
 
-  void validatePaymentDayAndSave(DateTime paymentDay) {
-    setState(ViewState.busy);
-
-    this._validated = paymentDay != null;
-    if (this._validated) {
-      this._paymentDay = paymentDay;
+  void onSubscriptionChange(dynamic subscriptionType) {
+    _subscriptionPageValidated = subscriptionType != null;
+    if (subscriptionPageValidated) {
+      _subscriptionType = subscriptionType as SubscriptionType;
     }
-
     setState(ViewState.idle);
   }
 
-  void validateSubscriptionTypeAndSave(dynamic subscriptionType) {
-    setState(ViewState.busy);
-
-    this._validated = subscriptionType != null;
-    if (this._validated) {
-      this._subscriptionType = subscriptionType as SubscriptionType;
+  void onPaymentDayChange(DateTime paymentDay) {
+    _paymentPageValidated = paymentDay != null;
+    if (paymentPageValidated) {
+      _paymentDay = paymentDay;
     }
-
     setState(ViewState.idle);
   }
 
   void buildFamilyFromStoredFields() {
-    setState(ViewState.busy);
-
     final String id = this.family?.id ?? Family.generateId();
     final String name = this._name != null ? this._name : this.family?.name;
     final DateTime paymentDay = this._paymentDay ?? this.family?.paymentDay;
@@ -102,29 +82,26 @@ class FamilyBuilderModel extends BaseModel {
     final List<MemberPreview> membersPreview =
         this.family?.membersPreview ?? [];
 
-    if (id == null ||
-        name == null ||
-        paymentDay == null ||
-        price == null ||
-        subscriptionType == null) {
-      this._buildData = BuildData<Family>(response: BuildResponses.error);
-      return;
+    Family newFamily;
+    BuildResponse response = BuildResponse.success;
+    try {
+      newFamily = Family(
+        id: id,
+        name: name,
+        paymentDay: paymentDay,
+        price: price,
+        subscriptionType: subscriptionType,
+        membersPreview: membersPreview,
+      );
+    } catch (error) {
+      print('Couldn\'t build a family $error');
+      response = BuildResponse.error;
     }
 
-    final Family newFamily = Family(
-      id: id,
-      name: name,
-      paymentDay: paymentDay,
-      price: price,
-      subscriptionType: subscriptionType,
-      membersPreview: membersPreview,
-    );
-
-    this._buildData = BuildData<Family>(
+    _builderResponse = BuilderResponse<Family>(
       product: newFamily,
-      response: BuildResponses.success,
+      response: response,
     );
-
     setState(ViewState.idle);
   }
 }
