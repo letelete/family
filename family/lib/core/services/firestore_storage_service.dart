@@ -107,4 +107,17 @@ class FirestoreStorageService implements StorageService {
         .map((doc) => _familySerializer.convert(doc.data))
         .toList());
   }
+
+  @override
+  Future<bool> removeUserFamily(String userId, String familyId) async {
+    final String path =
+        _Path.generate([_Path.users, userId, _Path.families, familyId]);
+    bool success = false;
+    await _firestore
+        .document(path)
+        .delete()
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
+  }
 }
