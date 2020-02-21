@@ -10,6 +10,7 @@ import 'package:family/router.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
+import 'package:family/ui/view/menu_view/views_implementation/family_menu.dart';
 import 'package:family/ui/view/menu_view/views_implementation/user_menu.dart';
 import 'package:family/ui/widgets/app_bar_title_widget.dart';
 import 'package:family/ui/widgets/family_card_widget.dart';
@@ -27,8 +28,6 @@ class HomeView extends StatelessWidget {
 
     final User user = Provider.of<User>(context);
     final double parentWidth = MediaQuery.of(context).size.width;
-    final UserMenu userMenu = UserMenu(context);
-
     return BaseView<HomeModel>(
       onModelReady: (model) => model.fetchTodayDate(),
       builder: (context, model, child) {
@@ -45,7 +44,7 @@ class HomeView extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(right: 16.0),
                     child: UserAvatarWidget(
-                      onTap: () => userMenu.show(),
+                      onTap: () => UserMenu(context).show(),
                       name: user.name,
                       photoUrl: user.photoUrl,
                       size: 40.0,
@@ -95,10 +94,15 @@ class HomeView extends StatelessWidget {
                   final Family family = families.elementAt(position);
                   return FamilyCardWidget(
                     familyCard: FamilyCard.fromFamily(family),
-                    onTap: (Family family) => Navigator.of(context).pushNamed(
-                      Paths.familyView,
-                      arguments: family,
-                    ),
+                    onTap: (Family family) {
+                      return Navigator.of(context).pushNamed(
+                        Paths.familyView,
+                        arguments: family,
+                      );
+                    },
+                    onLongPress: (Family family) {
+                      return FamilyMenu(context, family).show();
+                    },
                   );
                 },
               );

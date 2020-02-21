@@ -20,8 +20,8 @@ abstract class Menu<T extends BaseModel> {
 
   MenuTile _cancelMenuTile() => MenuTile(
         title: 'Cancel',
-        onTap: _dismiss,
+        onTap: close,
       );
 
-  void _dismiss() => Navigator.of(context).pop();
+  void close() => Navigator.of(context).pop();
 }

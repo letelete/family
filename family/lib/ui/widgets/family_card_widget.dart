@@ -16,11 +16,13 @@ const double _cardHeight = 250.0;
 class FamilyCardWidget extends StatelessWidget {
   final FamilyCard familyCard;
   final Function(Family) onTap;
+  final Function(Family) onLongPress;
 
   const FamilyCardWidget({
     Key key,
     this.familyCard,
     this.onTap,
+    this.onLongPress,
   })  : assert(familyCard != null),
         super(key: key);
 
@@ -28,6 +30,8 @@ class FamilyCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap == null ? null : () => onTap(familyCard.family),
+      onLongPress:
+          onLongPress == null ? null : () => onLongPress(familyCard.family),
       child: GradientFadeContainer(
         height: _cardHeight,
         background: _getImage(),

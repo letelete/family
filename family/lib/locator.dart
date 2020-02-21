@@ -10,6 +10,7 @@ import 'package:family/core/services/authentication_service.dart';
 import 'package:family/core/services/firestore_storage_service.dart';
 import 'package:family/core/services/storage_service.dart';
 import 'package:family/core/viewmodels/family_builder_model.dart';
+import 'package:family/core/viewmodels/family_menu_model.dart';
 import 'package:family/core/viewmodels/family_model.dart';
 import 'package:family/core/viewmodels/home_model.dart';
 import 'package:family/core/viewmodels/login_model.dart';
@@ -37,8 +38,11 @@ void setupLocator() {
   locator.registerFactory(() => LoginModel());
   locator.registerFactory(() => NoRouteModel());
   locator.registerFactory(() => HomeModel());
+  locator.registerFactory(() => FamilyModel());
+
   locator.registerFactory(() => FamilyBuilderModel());
   locator.registerFactory(() => MemberBuilderModel());
-  locator.registerFactory(() => FamilyModel());
+
   locator.registerFactory(() => UserMenuModel());
+  locator.registerFactory(() => FamilyMenuModel());
 }
