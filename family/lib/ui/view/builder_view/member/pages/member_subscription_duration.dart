@@ -1,25 +1,25 @@
-import 'package:family/base/builder/base_page_view.dart';
+import 'package:family/builder/base_page_view.dart';
+import 'package:family/builder/builder_page_contract.dart';
 import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/models/selectable_list_tile.dart';
-import 'package:family/core/models/subscripton.dart';
 import 'package:family/core/viewmodels/family_builder_model.dart';
 import 'package:family/core/viewmodels/member_builder_model.dart';
 import 'package:family/ui/widgets/builder_selectable_list.dart';
 import 'package:flutter/material.dart';
 
-class MemberSubscriptionDurationPage extends StatelessWidget {
-  static const String title = 'How often he needs to pay?';
-
+class MemberSubscriptionDurationPage extends StatelessWidget
+    implements BuilderPageContract<MemberBuilderModel> {
   final MemberBuilderModel model;
-  final SubscriptionType familySubscriptionType;
+  final SubscriptionType familySubscription;
 
   const MemberSubscriptionDurationPage(
-    this.model, {
+    this.model,
+    this.familySubscription, {
     Key key,
-    @required this.familySubscriptionType,
-  })  : assert(model != null),
-        assert(familySubscriptionType != null),
-        super(key: key);
+  }) : super(key: key);
+
+  @override
+  String get title => 'How often he needs to pay?';
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +30,12 @@ class MemberSubscriptionDurationPage extends StatelessWidget {
           label: '$duration $periodName', value: duration);
     }).toList();
 
-    final Subscription givenSusbcription = model.member?.subscription;
+    final passedSubscription = model.member?.subscription;
 
     int initialSelection = SelectableBuilderListWidget.noSelection;
-    if (givenSusbcription != null) {
+    if (passedSubscription != null) {
       initialSelection = listTiles.indexWhere((SelectableListTile tile) {
-        return tile.value == givenSusbcription.tresholdBetweenPayments;
+        return tile.value == passedSubscription.tresholdBetweenPayments;
       });
     }
 
@@ -43,13 +43,10 @@ class MemberSubscriptionDurationPage extends StatelessWidget {
       builder: (context) {
         return SelectableBuilderListWidget<int>(
           children: listTiles,
-          onSelected: (duration) {
-            bool isDurationValid =
-                model.validateSubscription(duration, familySubscriptionType);
-            if (isDurationValid) {
-              model.saveSubscription(duration, familySubscriptionType);
-            }
-          },
+          onSelected: (duration) => model.onSubscriptionChange(
+            duration,
+            familySubscription,
+          ),
           initialSelection: initialSelection,
         );
       },

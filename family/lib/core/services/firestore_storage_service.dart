@@ -38,6 +38,66 @@ class FirestoreStorageService implements StorageService {
   MemberSerializer _memberSerializer = locator<MemberSerializer>();
 
   @override
+  Future<bool> addUserFamily(String userId, Family family) async {
+    final Map familyData = family.toJson();
+    final String path =
+        _Path.generate([_Path.users, userId, _Path.families, family.id]);
+    print(path);
+    bool success = false;
+    await _firestore
+        .document(path)
+        .setData(familyData)
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
+  }
+
+  @override
+  Future<bool> updateUserFamily(String userId, Family family) async {
+    final String path =
+        _Path.generate([_Path.users, userId, _Path.families, family.id]);
+    bool success = false;
+    final data = family.toJson();
+    await _firestore
+        .document(path)
+        .updateData(data)
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
+  }
+
+  @override
+  Future<bool> removeUserFamily(String userId, String familyId) async {
+    final String path =
+        _Path.generate([_Path.users, userId, _Path.families, familyId]);
+    bool success = false;
+    await _firestore
+        .document(path)
+        .delete()
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
+  }
+
+  @override
+  Future<Family> getFamily(String familyId) async {
+    Family family;
+    await _firestore.document(familyId).get().then((DocumentSnapshot doc) {
+      family = _familySerializer.convert(doc.data);
+    }).catchError(print);
+    return family;
+  }
+
+  @override
+  Stream<List<Family>> streamUserFamilies(String userId) {
+    final String path = _Path.generate([_Path.users, userId, _Path.families]);
+    final ref = _firestore.collection(path);
+    return ref.snapshots().map((snapshot) => snapshot.documents
+        .map((doc) => _familySerializer.convert(doc.data))
+        .toList());
+  }
+
+  @override
   Future<bool> addUserFamilyMember(
       String userId, String familyId, Member member) async {
     final Map memberData = member.toJson();
@@ -59,30 +119,6 @@ class FirestoreStorageService implements StorageService {
   }
 
   @override
-  Future<bool> addUserFamily(String userId, Family family) async {
-    final Map familyData = family.toJson();
-    final String path =
-        _Path.generate([_Path.users, userId, _Path.families, family.id]);
-    print(path);
-    bool success = false;
-    await _firestore
-        .document(path)
-        .setData(familyData)
-        .then((_) => success = true)
-        .catchError(print);
-    return success;
-  }
-
-  @override
-  Future<Family> getFamily(String familyId) async {
-    Family family;
-    await _firestore.document(familyId).get().then((DocumentSnapshot doc) {
-      family = _familySerializer.convert(doc.data);
-    }).catchError(print);
-    return family;
-  }
-
-  @override
   Future<List<Member>> getUserFamilyMembers(
       String userId, String familyId) async {
     final String path = _Path.generate(
@@ -97,27 +133,5 @@ class FirestoreStorageService implements StorageService {
           .toList();
     }).catchError(print);
     return members;
-  }
-
-  @override
-  Stream<List<Family>> streamUserFamilies(String userId) {
-    final String path = _Path.generate([_Path.users, userId, _Path.families]);
-    final ref = _firestore.collection(path);
-    return ref.snapshots().map((snapshot) => snapshot.documents
-        .map((doc) => _familySerializer.convert(doc.data))
-        .toList());
-  }
-
-  @override
-  Future<bool> removeUserFamily(String userId, String familyId) async {
-    final String path =
-        _Path.generate([_Path.users, userId, _Path.families, familyId]);
-    bool success = false;
-    await _firestore
-        .document(path)
-        .delete()
-        .then((_) => success = true)
-        .catchError(print);
-    return success;
   }
 }

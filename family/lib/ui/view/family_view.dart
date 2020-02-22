@@ -1,16 +1,18 @@
 import 'package:family/base/base_view.dart';
-import 'package:family/core/enums/build_responses.dart';
-import 'package:family/core/models/build_data/build_data.dart';
-import 'package:family/core/models/build_data/member_build_data.dart';
+import 'package:family/core/models/builder/build_response.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
 import 'package:family/core/models/member.dart';
 import 'package:family/core/models/user.dart';
 import 'package:family/core/viewmodels/family_model.dart';
-import 'package:family/router.dart';
+import 'package:family/core/viewmodels/member_builder_model.dart';
+import 'package:family/locator.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/colors.dart';
 import 'package:family/ui/shared/sizes.dart';
+import 'package:family/ui/view/builder_view/member/member_builder.dart';
+import 'package:family/ui/view/builder_view/member/pages/page_creator.dart';
+import 'package:family/ui/view/menu_view/views_implementation/family_menu.dart';
 import 'package:family/ui/widgets/family_payment_info_widget.dart';
 import 'package:family/ui/widgets/gradient_fade_container.dart';
 import 'package:family/ui/widgets/member_tile.dart';
@@ -31,8 +33,26 @@ class FamilyView extends StatelessWidget {
     final FamilyCard familyCard = FamilyCard.fromFamily(family);
 
     return BaseView<FamilyModel>(
+      providers: [
+        Provider<MemberBuilderModel>(
+          create: (_) => locator<MemberBuilderModel>(),
+        ),
+      ],
       onModelReady: (model) => model.fetchMembers(user.id, family.id),
       builder: (BuildContext context, FamilyModel model, _) {
+        showMemberBuilderForResults() async {
+          final memberBuilder = MemberBuilder(
+            pages: (model) => MemberPageCreator(model).allPages(
+              familySubscription: family.subscriptionType,
+            ),
+          );
+          final response = await Navigator.push<BuilderResponse<Member>>(
+            context,
+            MaterialPageRoute(builder: (_) => memberBuilder),
+          );
+          model.onMemberBuilderResponse(user.id, family.id, response);
+        }
+
         Widget appBar = SliverPersistentHeader(
           delegate: FamilySliverAppBar(
             expandedHeight: 200,
@@ -64,33 +84,6 @@ class FamilyView extends StatelessWidget {
             childCount: model.members.length,
           ),
         );
-
-        Future<void> showMemberBuilderForResults() async {
-          final builderArguments = MemberBuildData(
-            memberFamilySubscription: family.subscriptionType,
-          );
-
-          var data = await Navigator.pushNamed(
-            context,
-            Paths.memberBuilder,
-            arguments: builderArguments,
-          );
-
-          final member = data as BuildData<Member>;
-
-          if (member == null) return;
-
-          if (member.response == BuildResponses.success) {
-            bool error = !await model.addNewMember(
-              user.id,
-              member.product,
-              family.id,
-            );
-            if (error) print('FamilyView: Error while adding new member.');
-          } else {
-            print('FamilyView: Member response was not successfull.');
-          }
-        }
 
         Widget floatingActionButton = Positioned(
           bottom: 16.0,
@@ -182,7 +175,7 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       right: bodyHorizontalMargin,
       child: IconButton(
         iconSize: iconSize,
-        onPressed: _showFamilyMenu,
+        onPressed: () => FamilyMenu(context, familyCard.family).show(),
         icon: Icon(
           Icons.more_vert,
           color: AppColors.textPrimary,
@@ -250,10 +243,6 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
         textColumn,
       ],
     );
-  }
-
-  Future<void> _showFamilyMenu() async {
-    print('Showing family menu.');
   }
 
   @override

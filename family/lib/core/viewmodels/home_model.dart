@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:family/base/base_model.dart';
+import 'package:family/core/enums/build_responses.dart';
 import 'package:family/core/enums/view_state.dart';
+import 'package:family/core/models/builder/build_response.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/services/authentication_service.dart';
 import 'package:family/core/services/storage_service.dart';
@@ -30,10 +32,16 @@ class HomeModel extends BaseModel {
     return success;
   }
 
-  Future<bool> addNewFamily(String userId, Family family) async {
+  Future<void> onFamilyBuilderResponse(
+      String userId, BuilderResponse<Family> response) async {
     setState(ViewState.busy);
-    bool success = await _storageService.addUserFamily(userId, family);
+    if (response == null || response.response == BuildResponse.cancel) {
+      return;
+    }
+    if (response.response == BuildResponse.success) {
+      final family = response.product;
+      await _storageService.addUserFamily(userId, family);
+    }
     setState(ViewState.idle);
-    return success;
   }
 }
