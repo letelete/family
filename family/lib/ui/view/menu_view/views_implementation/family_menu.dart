@@ -75,7 +75,7 @@ class FamilyMenu extends Menu<FamilyMenuModel> {
     if (data?.response == BuildResponse.success) {
       final user = Provider.of<User>(context, listen: false);
       this.family = data.product;
-      model.updateUserFamily(user.id, family);
+      await model.updateUserFamily(user.id, family);
     }
   }
 

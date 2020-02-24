@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 class MenuRouteView extends ModalRoute<void> {
   final List<MenuTile> children;
 
-  MenuRouteView(this.children)
-      : assert(children != null),
-        assert(children.length > 0);
+  MenuRouteView(this.children) : assert(children != null);
 
   @override
   Duration get transitionDuration => Duration(milliseconds: 450);

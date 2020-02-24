@@ -10,6 +10,6 @@ class BuilderPageData {
     @required this.title,
     @required this.validated,
   })  : assert(view != null),
-        assert(title != null && title.length > 0),
+        assert(title != null),
         assert(validated != null);
 }

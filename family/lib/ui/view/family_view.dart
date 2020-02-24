@@ -50,7 +50,7 @@ class FamilyView extends StatelessWidget {
             context,
             MaterialPageRoute(builder: (_) => memberBuilder),
           );
-          model.onMemberBuilderResponse(user.id, family.id, response);
+          await model.onMemberBuilderResponse(user.id, family.id, response);
         }
 
         Widget appBar = SliverPersistentHeader(

@@ -46,7 +46,7 @@ class HomeView extends StatelessWidget {
                   context,
                   MaterialPageRoute(builder: (_) => familyBuilder),
                 );
-                model.onFamilyBuilderResponse(user.id, response);
+                await model.onFamilyBuilderResponse(user.id, response);
               }
 
               final appBar = AppBar(

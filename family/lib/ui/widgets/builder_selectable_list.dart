@@ -25,7 +25,7 @@ class SelectableBuilderListWidget<T> extends StatefulWidget {
     this.onSelected,
     this.initialSelection,
   })  : assert(onSelected != null),
-        assert(children != null && children.length > 0),
+        assert(children != null),
         super(key: key);
   @override
   _SelectableBuilderListState createState() => _SelectableBuilderListState();

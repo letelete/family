@@ -32,7 +32,7 @@ class BuilderTextFieldWidget extends StatelessWidget {
     this.inputDecoration,
     this.textStyle,
     this.hintStyle,
-  })  : assert(hintText != null && hintText.length > 0),
+  })  : assert(hintText != null),
         assert(onChanged != null || controller != null,
             'At least one callback must be declared'),
         super(key: key);

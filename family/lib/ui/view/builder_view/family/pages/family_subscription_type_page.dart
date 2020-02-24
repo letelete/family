@@ -17,7 +17,7 @@ class FamilySubscriptionTypePage extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    const listTiles = const <SelectableListTile<SubscriptionType>>[
+    const listTiles = <SelectableListTile<SubscriptionType>>[
       SelectableListTile(label: 'Weekly', value: SubscriptionType.weekly),
       SelectableListTile(label: 'Monthly', value: SubscriptionType.monthly),
       SelectableListTile(label: 'Yearly', value: SubscriptionType.yearly),

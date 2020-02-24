@@ -15,7 +15,6 @@ class OverlappingAvatarsWidget extends StatelessWidget {
     this.avatars,
     this.singleAvatarSize,
   })  : assert(avatars != null),
-        assert(avatars.length > 0),
         assert(singleAvatarSize != null),
         this._totalAvatarSize = singleAvatarSize + 2 * _avatarBorderSize,
         this._avatarOverlapPercentage = 0.2,

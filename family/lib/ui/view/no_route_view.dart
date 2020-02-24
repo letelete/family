@@ -15,7 +15,7 @@ class NoRouteView extends StatelessWidget {
       onModelReady: (model) async {
         bool redirect = await model.redirectToHomeScreen();
         if (redirect) {
-          Navigator.pushNamed(context, Paths.homeView);
+          await Navigator.pushNamed(context, Paths.homeView);
         }
       },
       builder: (context, model, child) => Scaffold(
