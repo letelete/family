@@ -30,10 +30,7 @@ class FamilyModel extends BaseModel {
     BuilderResponse<Member> response,
   ) async {
     setState(ViewState.busy);
-    if (response == null || response.response == BuildResponse.cancel) {
-      return;
-    }
-    if (response.response == BuildResponse.success) {
+    if (response?.response == BuildResponse.success) {
       final member = response.product;
       await _storageService.addUserFamilyMember(
         userId,
