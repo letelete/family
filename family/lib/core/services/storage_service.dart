@@ -10,7 +10,7 @@ abstract class StorageService {
 
   Future<bool> removeUserFamily(String userId, String familyId);
 
-  Future<Family> getFamily(String familyId);
+  Future<Family> getFamily(String userId, String familyId);
 
   Stream<List<Family>> streamUserFamilies(String userId);
 

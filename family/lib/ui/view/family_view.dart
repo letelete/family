@@ -1,4 +1,5 @@
 import 'package:family/base/base_view.dart';
+import 'package:family/core/enums/view_state.dart';
 import 'package:family/core/models/builder/build_response.dart';
 import 'package:family/core/models/family.dart';
 import 'package:family/core/models/family_card.dart';
@@ -15,31 +16,35 @@ import 'package:family/ui/view/builder_view/member/pages/page_creator.dart';
 import 'package:family/ui/view/menu_view/views_implementation/family_menu.dart';
 import 'package:family/ui/widgets/family_payment_info_widget.dart';
 import 'package:family/ui/widgets/gradient_fade_container.dart';
+import 'package:family/ui/widgets/linear_progress_indicator_widget.dart';
 import 'package:family/ui/widgets/member_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 class FamilyView extends StatelessWidget {
-  final Family family;
+  final Family givenFamily;
 
-  const FamilyView(this.family, {Key key})
-      : assert(family != null),
+  const FamilyView(this.givenFamily, {Key key})
+      : assert(givenFamily != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<User>(context);
-    final FamilyCard familyCard = FamilyCard.fromFamily(family);
-
+    final user = Provider.of<User>(context);
     return BaseView<FamilyModel>(
       providers: [
         Provider<MemberBuilderModel>(
           create: (_) => locator<MemberBuilderModel>(),
         ),
       ],
-      onModelReady: (model) => model.fetchMembers(user.id, family.id),
+      onModelReady: (model) {
+        model.fetchFamily(user.id, givenFamily.id);
+        model.fetchMembers(user.id, givenFamily.id);
+      },
       builder: (BuildContext context, FamilyModel model, _) {
+        final family = model.family ?? givenFamily;
+        final familyCard = FamilyCard.fromFamily(family);
         showMemberBuilderForResults() async {
           final memberBuilder = MemberBuilder(
             pages: (model) => MemberPageCreator(model).allPages(
@@ -53,7 +58,7 @@ class FamilyView extends StatelessWidget {
           await model.onMemberBuilderResponse(user.id, family.id, response);
         }
 
-        Widget appBar = SliverPersistentHeader(
+        final appBar = SliverPersistentHeader(
           delegate: FamilySliverAppBar(
             expandedHeight: 200,
             familyCard: familyCard,
@@ -61,7 +66,7 @@ class FamilyView extends StatelessWidget {
           floating: true,
         );
 
-        Widget priceTile = SliverPadding(
+        final priceTile = SliverPadding(
           padding: EdgeInsets.symmetric(vertical: 24.0),
           sliver: SliverToBoxAdapter(
             child: FamilyPaymentInfoWidget(
@@ -72,7 +77,7 @@ class FamilyView extends StatelessWidget {
           ),
         );
 
-        Widget membersList = SliverList(
+        final membersList = SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) {
               Member member = model.members.elementAt(index);
@@ -85,7 +90,7 @@ class FamilyView extends StatelessWidget {
           ),
         );
 
-        Widget floatingActionButton = Positioned(
+        final floatingActionButton = Positioned(
           bottom: 16.0,
           left: 16.0,
           right: 16.0,
@@ -101,17 +106,25 @@ class FamilyView extends StatelessWidget {
           ),
         );
 
+        final progressIndicator = SliverToBoxAdapter(
+          child: LinearProgressIndicatorWidget(),
+        );
+
         return SafeArea(
           child: Material(
             color: AppColors.background,
             child: Stack(
               children: <Widget>[
-                CustomScrollView(
-                  slivers: <Widget>[
-                    appBar,
-                    priceTile,
-                    if (model.members.isNotEmpty) membersList,
-                  ],
+                RefreshIndicator(
+                  onRefresh: () => model.fetchFamily(user.id, family.id),
+                  child: CustomScrollView(
+                    slivers: <Widget>[
+                      appBar,
+                      if (model.viewState == ViewState.busy) progressIndicator,
+                      priceTile,
+                      if (model.members.isNotEmpty) membersList,
+                    ],
+                  ),
                 ),
                 floatingActionButton,
               ],
@@ -150,13 +163,13 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
         textColumnTopMargin *
         (expandedHeight - shrinkOffset);
 
-    Widget solidBackground = Container(
+    final solidBackground = Container(
       width: mediaSize.width,
       height: minExtent,
       color: AppColors.background,
     );
 
-    Widget dynamicBackground = Opacity(
+    final dynamicBackground = Opacity(
       opacity: (expandedHeight - shrinkOffset) / expandedHeight,
       child: GradientFadeContainer(
         height: expandedHeight,
@@ -171,7 +184,7 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       ),
     );
 
-    Widget horizontalMenuButton = Positioned(
+    final horizontalMenuButton = Positioned(
       right: bodyHorizontalMargin,
       child: IconButton(
         iconSize: iconSize,
@@ -183,7 +196,7 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       ),
     );
 
-    Widget backButton = Positioned(
+    final backButton = Positioned(
       left: bodyHorizontalMargin,
       child: IconButton(
         iconSize: iconSize,
@@ -195,7 +208,7 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       ),
     );
 
-    Widget familyName = Text(
+    final familyName = Text(
       familyCard.family.name,
       style: TextStyle(
         color: AppColors.textPrimary,
@@ -204,7 +217,7 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       ),
     );
 
-    Widget familyPaymentInfo = Opacity(
+    final familyPaymentInfo = Opacity(
       opacity: (expandedHeight - shrinkOffset) / expandedHeight,
       child: Text(
         paymentInfoText,
@@ -215,7 +228,7 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       ),
     );
 
-    Widget textColumn = Positioned(
+    final textColumn = Positioned(
       width: mediaSize.width - buttonsSpaceHorizontal,
       left: textColumnLeftMargin,
       bottom: textColumnSpacing,

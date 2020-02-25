@@ -80,9 +80,11 @@ class FirestoreStorageService implements StorageService {
   }
 
   @override
-  Future<Family> getFamily(String familyId) async {
+  Future<Family> getFamily(String userId, String familyId) async {
     Family family;
-    await _firestore.document(familyId).get().then((DocumentSnapshot doc) {
+    final String path =
+        _Path.generate([_Path.users, userId, _Path.families, familyId]);
+    await _firestore.document(path).get().then((DocumentSnapshot doc) {
       family = _familySerializer.convert(doc.data);
     }).catchError(print);
     return family;
