@@ -15,6 +15,7 @@ import 'package:family/ui/view/menu_view/views_implementation/family_menu.dart';
 import 'package:family/ui/view/menu_view/views_implementation/user_menu.dart';
 import 'package:family/ui/widgets/app_bar_title_widget.dart';
 import 'package:family/ui/widgets/family_card_widget.dart';
+import 'package:family/ui/widgets/linear_progress_indicator_widget.dart';
 import 'package:family/ui/widgets/user_avatar_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -79,10 +80,7 @@ class HomeView extends StatelessWidget {
 
               final progressIndicator = Visibility(
                 visible: model.viewState == ViewState.busy,
-                child: LinearProgressIndicator(
-                  backgroundColor: Colors.black,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                ),
+                child: LinearProgressIndicatorWidget(),
               );
 
               final dayOfMonthBar = Container(
