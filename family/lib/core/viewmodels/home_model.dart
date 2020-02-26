@@ -35,10 +35,7 @@ class HomeModel extends BaseModel {
   Future<void> onFamilyBuilderResponse(
       String userId, BuilderResponse<Family> response) async {
     setState(ViewState.busy);
-    if (response == null || response.response == BuildResponse.cancel) {
-      return;
-    }
-    if (response.response == BuildResponse.success) {
+    if (response?.response == BuildResponse.success) {
       final family = response.product;
       await _storageService.addUserFamily(userId, family);
     }

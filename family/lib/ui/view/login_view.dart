@@ -3,6 +3,7 @@ import 'package:family/core/enums/view_state.dart';
 import 'package:family/core/viewmodels/login_model.dart';
 import 'package:family/ui/shared/assets.dart';
 import 'package:family/ui/shared/gradients.dart';
+import 'package:family/ui/widgets/linear_progress_indicator_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -37,10 +38,7 @@ class LoginView extends StatelessWidget {
 
         final Widget authProgressIndicator = Visibility(
           visible: model.viewState == ViewState.busy,
-          child: LinearProgressIndicator(
-            backgroundColor: Colors.black,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-          ),
+          child: LinearProgressIndicatorWidget(),
         );
 
         final Widget bodyContainer = Container(

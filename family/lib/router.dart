@@ -1,10 +1,10 @@
 import 'package:family/core/models/family.dart';
-import 'package:family/ui/view/family_view.dart';
+import 'package:family/ui/view/family_view/family_view.dart';
+import 'package:family/ui/view/home_view/home_view.dart';
 import 'package:family/ui/view/login_view.dart';
 import 'package:family/ui/view/no_route_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:family/ui/view/home_view.dart';
 
 const String _noRoutePath = '404';
 
