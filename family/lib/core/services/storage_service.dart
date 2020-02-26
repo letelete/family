@@ -10,12 +10,12 @@ abstract class StorageService {
 
   Future<bool> removeUserFamily(String userId, String familyId);
 
-  Future<Family> getFamily(String userId, String familyId);
+  Stream<Family> streamFamily(String userId, String familyId);
 
   Stream<List<Family>> streamUserFamilies(String userId);
 
+  Stream<List<Member>> streamFamilyMembers(String userId, String familyId);
+
   Future<bool> addUserFamilyMember(
       String userId, String familyId, Member member);
-
-  Future<List<Member>> getUserFamilyMembers(String userId, String familyId);
 }
