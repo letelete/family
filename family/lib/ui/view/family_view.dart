@@ -45,6 +45,7 @@ class FamilyView extends StatelessWidget {
       builder: (BuildContext context, FamilyModel model, _) {
         final family = model.family ?? givenFamily;
         final familyCard = FamilyCard.fromFamily(family);
+
         showMemberBuilderForResults() async {
           final memberBuilder = MemberBuilder(
             pages: (model) => MemberPageCreator(model).allPages(
@@ -188,7 +189,12 @@ class FamilySliverAppBar extends SliverPersistentHeaderDelegate {
       right: bodyHorizontalMargin,
       child: IconButton(
         iconSize: iconSize,
-        onPressed: () => FamilyMenu(context, familyCard.family).show(),
+        onPressed: () async {
+          final model = Provider.of<FamilyModel>(context, listen: false);
+          final user = Provider.of<User>(context, listen: false);
+          await FamilyMenu(context, familyCard.family).show();
+          await model.fetchFamily(user.id, familyCard.family.id);
+        },
         icon: Icon(
           Icons.more_vert,
           color: AppColors.textPrimary,
