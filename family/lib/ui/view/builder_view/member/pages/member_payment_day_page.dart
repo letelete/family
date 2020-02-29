@@ -1,9 +1,10 @@
 import 'package:family/builder/base_page_view.dart';
 import 'package:family/builder/builder_page_contract.dart';
+import 'package:family/consts.dart';
 import 'package:family/core/viewmodels/family_builder_model.dart';
 import 'package:family/core/viewmodels/member_builder_model.dart';
 import 'package:family/ui/shared/styles.dart';
-import 'package:family/ui/widgets/builder_day_selection_widget.dart';
+import 'package:family/ui/widgets/date_picker_dialog.dart';
 import 'package:flutter/material.dart';
 
 class MemberPaymentDayPage extends StatelessWidget
@@ -23,9 +24,9 @@ class MemberPaymentDayPage extends StatelessWidget
         ? 'Tap to select the payment day'
         : selectedDate.day.toString();
 
-    final dayPicker = BuilderDaySelection(
+    final dayPicker = DatePickerDialog(
       context: context,
-      daysSelectionLimit: 28,
+      daysSelectionLimit: AppConsts.lastSelectableSubscriptionDay,
       initialDate: selectedDate,
     );
 
