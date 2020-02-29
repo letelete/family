@@ -12,7 +12,7 @@ class DateTimeSerializer extends Converter<Map, DateTime> {
 
     DateTime dateTime;
     try {
-      dateTime = DateTime.parse(input[dateKey]);
+      dateTime = DateTime.parse(input[dateKey]).toLocal();
     } catch (e) {
       print('DateTimeSerializer: Error on parsing date time. ${e.toString()}');
     }
@@ -24,7 +24,7 @@ class DateTimeSerializer extends Converter<Map, DateTime> {
 extension DateTimeToJson on DateTime {
   Map toJson() {
     return <String, dynamic>{
-      DateTimeSerializer.dateKey: this.toIso8601String()
+      DateTimeSerializer.dateKey: this.toUtc().toIso8601String(),
     };
   }
 }
