@@ -66,8 +66,12 @@ class MemberTileWidget extends StatelessWidget {
     );
 
     return InkWell(
-      onTap: onTap == null ? null : () => onTap(member),
-      onLongPress: onLongPress == null ? null : () => () => onLongPress(member),
+      onTap: () {
+        if (onTap != null) return onTap(member);
+      },
+      onLongPress: () {
+        if (onLongPress != null) return onLongPress(member);
+      },
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: 16.0,

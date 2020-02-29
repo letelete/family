@@ -18,4 +18,7 @@ abstract class StorageService {
 
   Future<bool> addUserFamilyMember(
       String userId, String familyId, Member member);
+
+  Future<bool> updateMember(String userId, String familyId, Member member);
+  Future<bool> deleteMember(String userId, String familyId, String memberId);
 }

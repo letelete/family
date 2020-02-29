@@ -33,8 +33,8 @@ class MemberBuilder extends StatelessWidget
       builder: (context, model, _) {
         return BaseBuilderView<Member>(
           children: pages(model),
-          nextStepButtonLabel: 'Next',
-          finalStepButtonLabel: 'Add member',
+          nextStepButtonLabel: nextStepButtonLabel,
+          finalStepButtonLabel: finalStepButtonLabel,
           onFinishBuild: () {
             model.buildMemberFromStoredFields();
             return model.builderResponse;
