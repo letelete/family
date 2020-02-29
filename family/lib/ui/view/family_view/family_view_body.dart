@@ -76,9 +76,14 @@ class FamilyViewBody extends StatelessWidget {
               (BuildContext context, int index) {
                 final member = members.elementAt(index);
                 final tile = MemberTileWidget(
-                  onLongPress: (member) =>
-                      MemberMenu(context, member, family).show(),
                   member: member,
+                  onLongPress: (member) {
+                    return MemberMenu(context, member, family).show();
+                  },
+                  onTap: (member) {
+                    return model.onMemberPaidStatusChange(
+                        user.id, family.id, member);
+                  },
                 );
                 return Container(
                   child: tile,

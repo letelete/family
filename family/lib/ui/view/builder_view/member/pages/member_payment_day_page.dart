@@ -17,18 +17,16 @@ class MemberPaymentDayPage extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final DateTime selectedDate =
-        model.memberNextPayment ?? model.member?.nextPayment;
-    final double buttonOpacity = selectedDate == null ? 0.34 : 1.0;
-    final String buttonLabel = selectedDate == null
+    final selectedDate = model.memberNextPayment;
+    final buttonOpacity = selectedDate == null ? 0.34 : 1.0;
+    final buttonLabel = selectedDate == null
         ? 'Tap to select the payment day'
         : selectedDate.day.toString();
-    final DateTime initialDate = selectedDate ?? DateTime.now();
 
-    final BuilderDaySelection dayPicker = BuilderDaySelection(
+    final dayPicker = BuilderDaySelection(
       context: context,
       daysSelectionLimit: 28,
-      initialDate: initialDate,
+      initialDate: selectedDate,
     );
 
     return BaseBuilderPageView<FamilyBuilderModel>(
