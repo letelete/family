@@ -122,4 +122,31 @@ class FirestoreStorageService implements StorageService {
         .catchError(print);
     return success;
   }
+
+  @override
+  Future<bool> updateMember(
+      String userId, String familyId, Member member) async {
+    final path = _Path.member(userId, familyId, member.id);
+    final memberData = member.toJson();
+    bool success = false;
+    await _firestore
+        .document(path)
+        .updateData(memberData)
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
+  }
+
+  @override
+  Future<bool> deleteMember(
+      String userId, String familyId, String memberId) async {
+    final path = _Path.member(userId, familyId, memberId);
+    bool success = false;
+    await _firestore
+        .document(path)
+        .delete()
+        .then((_) => success = true)
+        .catchError(print);
+    return success;
+  }
 }

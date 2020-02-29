@@ -17,21 +17,26 @@ class MemberBuilderModel extends BaseModel {
   DateTime _memberNextPayment;
   Subscription _memberSubscription;
   String _memberPhotoUrl;
+  bool _memberPaid;
 
-  String get memberName => _memberName;
-  DateTime get memberNextPayment => _memberNextPayment;
-  Subscription get memberRepaymentDuration => _memberSubscription;
-  String get memberPhotoUrl => _memberPhotoUrl;
+  String get memberName => _memberName ?? member?.name;
+  DateTime get memberNextPayment => _memberNextPayment ?? member?.nextPayment;
+  Subscription get memberRepaymentDuration =>
+      _memberSubscription ?? member?.subscription;
+  String get memberPhotoUrl => _memberPhotoUrl ?? member?.photoUrl;
+  bool get memberPaid => _memberPaid ?? member?.paid;
 
   bool _namePageValidated;
   bool _paymentPageValidated;
   bool _subscriptionPageValidated;
   bool _photoUrlPageValidated;
+  bool _paidStatusPageValidated;
 
   bool get namePageValidated => _namePageValidated ?? false;
   bool get paymentPageValidated => _paymentPageValidated ?? false;
   bool get subscriptionPageValidated => _subscriptionPageValidated ?? false;
   bool get photoUrlPageValidated => _photoUrlPageValidated ?? false;
+  bool get paidStatusPageValidated => _paidStatusPageValidated ?? false;
 
   void initializeMember(Member member) => this._member = member;
 
@@ -71,15 +76,22 @@ class MemberBuilderModel extends BaseModel {
     setState(ViewState.idle);
   }
 
+  void onPaidStatusChange(bool status) {
+    _paidStatusPageValidated = status != null;
+    if (paidStatusPageValidated) {
+      _memberPaid = status;
+    }
+    setState(ViewState.idle);
+  }
+
   void buildMemberFromStoredFields() {
     setState(ViewState.busy);
     final String id = member?.id ?? Member.generateId();
-    final String name = memberName ?? member?.name;
-    final bool paid = member?.paid ?? true;
-    final String photoUrl = _memberPhotoUrl ?? member?.photoUrl;
-    final DateTime nextPaymentDay = _memberNextPayment ?? member?.nextPayment;
-    final Subscription subscription =
-        _memberSubscription ?? member?.subscription;
+    final String name = memberName;
+    final bool paid = memberPaid ?? true;
+    final String photoUrl = memberPhotoUrl;
+    final DateTime nextPaymentDay = memberNextPayment;
+    final Subscription subscription = memberRepaymentDuration;
     final DateTime createdAt = member?.createdAt ?? DateTime.now();
 
     Member newMember;

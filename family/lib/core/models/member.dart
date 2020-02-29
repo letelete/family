@@ -26,4 +26,24 @@ class Member {
         assert(createdAt != null);
 
   static String generateId() => Uuid().v1();
+
+  Member copyWith({
+    String id,
+    String name,
+    String photoUrl,
+    bool paid,
+    DateTime nextPayment,
+    Subscription subscription,
+    DateTime createdAt,
+  }) {
+    return Member(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      photoUrl: photoUrl ?? this.photoUrl,
+      paid: paid ?? this.paid,
+      nextPayment: nextPayment ?? this.nextPayment,
+      subscription: subscription ?? this.subscription,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

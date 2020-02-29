@@ -11,11 +11,11 @@ class SelectableBuilderListWidget<T> extends StatefulWidget {
 
   final List<SelectableListTile> children;
 
-  /// Executes on one of given [children] click.
-  /// Passes [SelectableListTile] value of [T] as a parameter.
+  /// Executes on [children] tap.
+  /// Passes [T] as an argument.
   ///
   /// If tile has been unselected, function passes null.
-  final Function(dynamic) onSelected;
+  final Function(T) onSelected;
 
   final int initialSelection;
 
@@ -44,20 +44,6 @@ class _SelectableBuilderListState extends State<SelectableBuilderListWidget> {
 
   @override
   Widget build(BuildContext context) {
-    void onTileSelected(SelectableListTile tile) {
-      final int tileIndex = widget.children.indexOf(tile);
-      final bool tileUnselected = tileIndex == _currentlySelectedIndex;
-      final returnValue = tileUnselected ? null : tile.value;
-      final int newSelectionIndex =
-          tileUnselected ? SelectableBuilderListWidget.noSelection : tileIndex;
-
-      setState(() {
-        _currentlySelectedIndex = newSelectionIndex;
-      });
-
-      widget.onSelected(returnValue);
-    }
-
     Widget buildListTileWidget(SelectableListTile tile, bool isSelected) {
       final Color textColor =
           isSelected ? AppColors.textPrimary : AppColors.textSecondary;
@@ -94,5 +80,19 @@ class _SelectableBuilderListState extends State<SelectableBuilderListWidget> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: tileWidgets,
     );
+  }
+
+  void onTileSelected(SelectableListTile tile) {
+    final int tileIndex = widget.children.indexOf(tile);
+    final bool tileUnselected = tileIndex == _currentlySelectedIndex;
+    final int newSelectionIndex =
+        tileUnselected ? SelectableBuilderListWidget.noSelection : tileIndex;
+    final returnValue = tileUnselected ? null : tile.value;
+
+    setState(() {
+      _currentlySelectedIndex = newSelectionIndex;
+    });
+
+    widget.onSelected(returnValue);
   }
 }

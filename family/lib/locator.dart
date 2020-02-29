@@ -15,6 +15,7 @@ import 'package:family/core/viewmodels/family_model.dart';
 import 'package:family/core/viewmodels/home_model.dart';
 import 'package:family/core/viewmodels/login_model.dart';
 import 'package:family/core/viewmodels/member_builder_model.dart';
+import 'package:family/core/viewmodels/member_menu_model.dart';
 import 'package:family/core/viewmodels/no_route_model.dart';
 import 'package:family/core/viewmodels/user_menu_model.dart';
 import 'package:get_it/get_it.dart';
@@ -45,4 +46,5 @@ void setupLocator() {
 
   locator.registerFactory(() => UserMenuModel());
   locator.registerFactory(() => FamilyMenuModel());
+  locator.registerFactory(() => MemberMenuModel());
 }

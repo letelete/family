@@ -1,3 +1,4 @@
+import 'package:family/ui/view/menu_view/views_implementation/member_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:family/core/models/builder/build_response.dart';
 import 'package:family/core/models/family.dart';
@@ -73,9 +74,19 @@ class FamilyViewBody extends StatelessWidget {
           return SliverList(
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                Member member = members.elementAt(index);
+                final member = members.elementAt(index);
+                final tile = MemberTileWidget(
+                  member: member,
+                  onLongPress: (member) {
+                    return MemberMenu(context, member, family).show();
+                  },
+                  onTap: (member) {
+                    return model.onMemberPaidStatusChange(
+                        user.id, family.id, member);
+                  },
+                );
                 return Container(
-                  child: MemberTileWidget(member: member),
+                  child: tile,
                   margin: EdgeInsets.only(top: index <= 0 ? 0.0 : 24.0),
                 );
               },

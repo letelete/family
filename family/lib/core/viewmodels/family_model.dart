@@ -34,4 +34,13 @@ class FamilyModel extends BaseModel {
     }
     setState(ViewState.idle);
   }
+
+  Future<void> onMemberPaidStatusChange(
+    String userId,
+    String familyId,
+    Member member,
+  ) async {
+    final updatedMember = member.copyWith(paid: !member.paid);
+    await _storageService.updateMember(userId, familyId, updatedMember);
+  }
 }

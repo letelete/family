@@ -3,6 +3,7 @@ import 'package:family/core/enums/subscription_type.dart';
 import 'package:family/core/models/builder/builder_page.dart';
 import 'package:family/core/viewmodels/member_builder_model.dart';
 import 'package:family/ui/view/builder_view/member/pages/member_name_page.dart';
+import 'package:family/ui/view/builder_view/member/pages/member_paid_page.dart';
 import 'package:family/ui/view/builder_view/member/pages/member_payment_day_page.dart';
 import 'package:family/ui/view/builder_view/member/pages/member_subscription_duration.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,15 @@ class MemberPageCreator extends BasePageCreator<MemberBuilderModel> {
       view: subscriptionPage,
       title: subscriptionPage.title,
       validated: model.subscriptionPageValidated,
+    );
+  }
+
+  memberPaidPage() {
+    final paidPage = MemberPaidPage(model);
+    return BuilderPageData(
+      view: paidPage,
+      title: paidPage.title,
+      validated: model.paidStatusPageValidated,
     );
   }
 
