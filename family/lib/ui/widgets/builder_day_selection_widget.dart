@@ -13,20 +13,27 @@ class BuilderDaySelection {
     this.firstDate,
     this.lastDate,
     this.daysSelectionLimit,
-  })  : assert(context != null),
-        assert(initialDate != null);
+  }) : assert(context != null);
 
   Future<DateTime> show() async {
-    final DateTime initialDate = this.initialDate ?? DateTime.now();
-    final DateTime firstDate = this.firstDate ?? DateTime(initialDate.year - 1);
-    final DateTime lastDate = this.firstDate ?? DateTime(initialDate.year + 1);
+    var validInitialDate = this.initialDate ?? DateTime.now();
+    bool initialDateBreaksPredicated =
+        daysSelectionLimit != null && validInitialDate.day > daysSelectionLimit;
+    if (initialDateBreaksPredicated) {
+      validInitialDate = DateTime(
+        validInitialDate.year,
+        validInitialDate.month,
+        validInitialDate.day - 1,
+      );
+    }
+    final initialDate = validInitialDate;
+    print(initialDate.toString());
+    final firstDate = this.firstDate ?? DateTime(initialDate.year - 1);
+    final lastDate = this.lastDate ?? DateTime(initialDate.year + 1);
     return await showDatePicker(
       context: context,
-      selectableDayPredicate: (DateTime val) {
-        return daysSelectionLimit == null
-            ? true
-            : val.day <= daysSelectionLimit;
-      },
+      selectableDayPredicate: (DateTime dt) =>
+          (daysSelectionLimit == null || dt.day <= daysSelectionLimit),
       initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
