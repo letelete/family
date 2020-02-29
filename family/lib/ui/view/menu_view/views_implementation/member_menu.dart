@@ -15,6 +15,7 @@ import 'package:family/ui/view/menu_view/views_implementation/base_menu.dart';
 import 'package:family/ui/widgets/simple_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:family/ui/utils/string_utils.dart';
 
 class MemberMenu extends Menu<MemberMenuModel> {
   final Family memberFamily;
@@ -29,6 +30,13 @@ class MemberMenu extends Menu<MemberMenuModel> {
 
   @override
   List<MenuTile> getChildren(MemberMenuModel model) {
+    final memberPaidStatus = MenuTile(
+      title: '${member.name.firstName()} paid?',
+      onTap: () async => _createAndShowBuilder(
+        (model) => MemberPageCreator(model).memberPaidPage(),
+      ),
+    );
+
     final paymentDay = MenuTile(
       title: 'Payment day',
       onTap: () async => _createAndShowBuilder(
@@ -57,6 +65,7 @@ class MemberMenu extends Menu<MemberMenuModel> {
     );
 
     return <MenuTile>[
+      memberPaidStatus,
       paymentDay,
       subscription,
       name,
