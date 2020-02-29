@@ -6,10 +6,14 @@ export const updateFamilyMembersPreview = functions.firestore
   .onWrite(async (change, context) => {
     const oldMemberData = change.before.data();
     const newMemberData = change.after.data();
-    if (newMemberData === oldMemberData) return null;
-
     const memberDoc = (change.after || change.before).ref;
     const familyDoc = memberDoc?.parent?.parent;
+    const noUpdateRequired = !hasPreviewRelatedChanges(
+      oldMemberData,
+      newMemberData
+    );
+
+    if (noUpdateRequired) return null;
     if (!familyDoc) {
       console.error("Family documentReference is null");
       return null;
@@ -19,24 +23,40 @@ export const updateFamilyMembersPreview = functions.firestore
       if (!newMemberData && oldMemberData) {
         return removeFromPreview(familyDoc, oldMemberData);
       } else if (!newMemberData) {
-        console.error("Both documents of member data are null");
+        // unreachable
         return null;
       }
-      const updatedPreview = await getUpdatedPreviewIfMemberExists(
-        familyDoc,
-        newMemberData
-      ).catch(error => {
-        console.error(error);
-        return null;
-      });
-      if (updatedPreview) return setPreview(familyDoc, updatedPreview);
-      else return appendMemberToPreview(familyDoc, newMemberData);
+      return await getUpdatedPreviewIfMemberExists(familyDoc, newMemberData)
+        .then(previewWithMember =>
+          previewWithMember
+            ? setPreview(familyDoc, previewWithMember)
+            : appendMemberToPreview(familyDoc, newMemberData)
+        )
+        .catch(error => {
+          console.error(error);
+          return null;
+        });
     } catch (error) {
       console.error(error);
     }
 
     return null;
   });
+
+function hasPreviewRelatedChanges(
+  oldMember: FirebaseFirestore.DocumentData | undefined,
+  newMember: FirebaseFirestore.DocumentData | undefined
+): Boolean {
+  if (!oldMember && !newMember) {
+    console.error("Both member data documents are null");
+    return false;
+  }
+  if (oldMember === newMember) return false;
+  const previewRelatedChangesMade =
+    oldMember?.name !== newMember?.name ||
+    oldMember?.photo_url !== newMember?.photo_url;
+  return previewRelatedChangesMade;
+}
 
 function removeFromPreview(
   familyDoc: FirebaseFirestore.DocumentReference,
@@ -53,26 +73,29 @@ async function getUpdatedPreviewIfMemberExists(
   familyDoc: FirebaseFirestore.DocumentReference,
   memberData: FirebaseFirestore.DocumentData
 ): Promise<FirebaseFirestore.DocumentData | null> {
-  const familyData = await familyDoc
+  const familyData = await getFamilyData(familyDoc);
+  if (!familyData) throw new Error("Family data is null");
+
+  const memberAlreadyInArray = (element: FirebaseFirestore.DocumentData) => {
+    return element.id === memberData.id;
+  };
+  const index = familyData.members_preview.findIndex(memberAlreadyInArray);
+  if (index === -1) return null;
+
+  familyData.members_preview[index] = getMemberPreview(memberData);
+  return familyData.members_preview;
+}
+
+async function getFamilyData(
+  familyDoc: FirebaseFirestore.DocumentReference
+): Promise<FirebaseFirestore.DocumentData | undefined> {
+  return await familyDoc
     .get()
     .then(snapshot => snapshot.data())
-    .catch(error => console.error(error));
-  if (!familyData) return null;
-
-  const membersPreview = familyData.members_preview;
-  let memberIndex = undefined;
-  for (const index in membersPreview) {
-    const memberExistInArray = membersPreview[index].id === memberData.id;
-    if (memberExistInArray) {
-      memberIndex = index;
-      break;
-    }
-  }
-  if (memberIndex) {
-    membersPreview[memberIndex] = getMemberPreview(memberData);
-    return membersPreview;
-  }
-  return null;
+    .catch(error => {
+      console.error(error);
+      return undefined;
+    });
 }
 
 function setPreview(
