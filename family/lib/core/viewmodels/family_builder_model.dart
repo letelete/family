@@ -22,10 +22,11 @@ class FamilyBuilderModel extends BaseModel {
 
   BuilderResponse<Family> get buildResponse => _builderResponse;
   Family get family => _family;
-  Price get price => _price;
-  String get name => _name;
-  DateTime get paymentDay => _paymentDay;
-  SubscriptionType get subscriptionType => _subscriptionType;
+  Price get price => _price ?? family?.price;
+  String get name => _name ?? family?.name;
+  DateTime get paymentDay => _paymentDay ?? family?.paymentDay;
+  SubscriptionType get subscriptionType =>
+      _subscriptionType ?? family?.subscriptionType;
 
   bool get namePageValidated => _namePageValidated ?? false;
   bool get pricePageValidated => _pricePageValidated ?? false;
@@ -74,11 +75,10 @@ class FamilyBuilderModel extends BaseModel {
 
   void buildFamilyFromStoredFields() {
     final String id = this.family?.id ?? Family.generateId();
-    final String name = this._name != null ? this._name : this.family?.name;
-    final DateTime paymentDay = this._paymentDay ?? this.family?.paymentDay;
-    final Price price = this._price ?? this.family?.price;
-    final SubscriptionType subscriptionType =
-        this._subscriptionType ?? this.family?.subscriptionType;
+    final String name = this.name;
+    final DateTime paymentDay = this.paymentDay;
+    final Price price = this.price;
+    final SubscriptionType subscriptionType = this.subscriptionType;
     final List<MemberPreview> membersPreview =
         this.family?.membersPreview ?? [];
 

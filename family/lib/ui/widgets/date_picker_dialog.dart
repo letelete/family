@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class BuilderDaySelection {
+class DatePickerDialog {
   final BuildContext context;
   final DateTime initialDate;
   final DateTime firstDate;
   final DateTime lastDate;
   final int daysSelectionLimit;
 
-  const BuilderDaySelection({
+  const DatePickerDialog({
     @required this.context,
     @required this.initialDate,
     this.firstDate,

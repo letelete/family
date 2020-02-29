@@ -15,7 +15,7 @@ class SelectableBuilderListWidget<T> extends StatefulWidget {
   /// Passes [T] as an argument.
   ///
   /// If tile has been unselected, function passes null.
-  final Function(T) onSelected;
+  final Function(dynamic) onSelected;
 
   final int initialSelection;
 
