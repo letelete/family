@@ -1,6 +1,13 @@
-import * as admin from "firebase-admin";
-import * as Members from "./members/family-members-preview";
+import * as Admin from "firebase-admin";
 
-admin.initializeApp();
+Admin.initializeApp();
+
+import * as Members from "./functions/members/update_family_members_preview";
+import * as Schedule from "./schedule/runner";
+import * as Family from "./functions/family/update_family_subscription";
 
 export const updateFamilyMembersPreview = Members.updateFamilyMembersPreview;
+
+export const scheduleTasksRunner = Schedule.tasksRunner;
+
+export const updateFamilySubscription = Family.updateFamilySubscription;

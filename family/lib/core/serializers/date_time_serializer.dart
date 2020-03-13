@@ -1,30 +1,27 @@
 import 'dart:convert';
 
-class DateTimeSerializer extends Converter<Map, DateTime> {
-  static const dateKey = 'date';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+class DateTimeSerializer extends Converter<Timestamp, DateTime> {
   @override
-  DateTime convert(Map input) {
+  DateTime convert(Timestamp input) {
     if (input == null) {
       print('DateTimeSerializer: The input is null.');
       return null;
     }
-
     DateTime dateTime;
     try {
-      dateTime = DateTime.parse(input[dateKey]).toLocal();
+      dateTime = input.toDate().toLocal();
     } catch (e) {
       print('DateTimeSerializer: Error on parsing date time. ${e.toString()}');
     }
-
     return dateTime;
   }
 }
 
 extension DateTimeToJson on DateTime {
-  Map toJson() {
-    return <String, dynamic>{
-      DateTimeSerializer.dateKey: this.toUtc().toIso8601String(),
-    };
+  Timestamp toJson() {
+    final utc = this.toUtc();
+    return Timestamp.fromDate(utc);
   }
 }

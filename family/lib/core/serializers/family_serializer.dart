@@ -15,7 +15,7 @@ class FamilySerializer extends Converter<Map, Family> {
   static const nameKey = 'name';
   static const paymentDayKey = 'payment_day';
   static const priceKey = 'price';
-  static const subscriptionTypeKey = 'subscripion_type';
+  static const subscriptionTypeKey = 'subscription_type';
   static const membersPreviewKey = 'members_preview';
 
   PriceSerializer _priceSerializer = locator<PriceSerializer>();
@@ -75,7 +75,7 @@ extension FamilyToJson on Family {
       FamilySerializer.nameKey: this.name,
       FamilySerializer.paymentDayKey: this.paymentDay.toJson(),
       FamilySerializer.priceKey: this.price.toJson(),
-      FamilySerializer.subscriptionTypeKey: this.subscriptionType.toString(),
+      FamilySerializer.subscriptionTypeKey: this.subscriptionType.toJson(),
       FamilySerializer.membersPreviewKey:
           membersPreviewAsJson(this.membersPreview),
     };

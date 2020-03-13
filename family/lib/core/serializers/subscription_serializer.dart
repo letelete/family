@@ -44,7 +44,7 @@ extension SubscriptionToJson on Subscription {
   Map<String, dynamic> toJson() {
     return {
       SubscriptionSerializer.subscriptionTypeKey:
-          this.subscriptionType.toString(),
+          this.subscriptionType.toJson(),
       SubscriptionSerializer.tresholdBetweenPaymentsKey:
           this.tresholdBetweenPayments.toString(),
     };

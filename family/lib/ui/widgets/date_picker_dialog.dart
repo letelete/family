@@ -23,11 +23,10 @@ class DatePickerDialog {
       validInitialDate = DateTime(
         validInitialDate.year,
         validInitialDate.month,
-        validInitialDate.day - 1,
+        daysSelectionLimit,
       );
     }
     final initialDate = validInitialDate;
-    print(initialDate.toString());
     final firstDate = this.firstDate ?? DateTime(initialDate.year - 1);
     final lastDate = this.lastDate ?? DateTime(initialDate.year + 1);
     return await showDatePicker(
@@ -43,6 +42,13 @@ class DatePickerDialog {
           child: child,
         );
       },
-    );
+    ).then((DateTime date) {
+      if (date == null) return date;
+      return DateTime(
+        date.year,
+        date.month,
+        date.day,
+      );
+    });
   }
 }
