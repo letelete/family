@@ -5,10 +5,15 @@ import 'package:family/core/enums/subscription_type.dart';
 class SubscriptionTypeSerializer extends Converter<String, SubscriptionType> {
   @override
   SubscriptionType convert(String input) {
-    if (input == null) {
-      print('MemberSerializer: The input is null.');
-      return null;
-    }
-    return getSubscriptionTypeFromString(input);
+    return SubscriptionType.values.firstWhere(
+      (type) => type.toJson() == input,
+      orElse: () => null,
+    );
+  }
+}
+
+extension SubscriptionTypeToJson on SubscriptionType {
+  String toJson() {
+    return this.toString().split(".").last;
   }
 }
